@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="gzt.ora21991.mapper.CustomerContactMapper">
+    <resultMap id="BaseResultMap" type="gzt.ora21991.dto.CustomerContact">
+        <result column="CONTACT_ID" property="contactId" jdbcType="DECIMAL" />
+        <result column="CUSTOMER_ID" property="customerId" jdbcType="DECIMAL" />
+        <result column="CONTACT_TYPE" property="contactType" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="SEX" property="sex" jdbcType="VARCHAR" />
+        <result column="DEPARTMENT" property="department" jdbcType="VARCHAR" />
+        <result column="POSITION" property="position" jdbcType="VARCHAR" />
+        <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+        <result column="TEL" property="tel" jdbcType="VARCHAR" />
+        <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+        <result column="ADDRESS_COUNTRY" property="addressCountry" jdbcType="VARCHAR" />
+        <result column="ADDRESS_PROVINCE" property="addressProvince" jdbcType="VARCHAR" />
+        <result column="ADDRESS_CITY" property="addressCity" jdbcType="VARCHAR" />
+        <result column="ADDRESS_ZONE" property="addressZone" jdbcType="VARCHAR" />
+        <result column="ADDRESS_DETAILS" property="addressDetails" jdbcType="VARCHAR" />
+        <result column="ADDRESS_ZIP_CODE" property="addressZipCode" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectByCustomerId" resultMap="BaseResultMap" parameterType="gzt.ora21991.dto.Product">
+        SELECT
+        hcc.CONTACT_ID,
+        hcc.CUSTOMER_ID,
+        hcc.CONTACT_TYPE,
+        hcc.NAME,
+        hcc.SEX,
+        hcc.DEPARTMENT,
+        hcc.POSITION,
+        hcc.PHONE,
+        hcc.TEL,
+        hcc.EMAIL,
+        hcc.ADDRESS_COUNTRY,
+        hcc.ADDRESS_PROVINCE,
+        hcc.ADDRESS_CITY,
+        hcc.ADDRESS_ZONE,
+        hcc.ADDRESS_DETAILS,
+        hcc.ADDRESS_ZIP_CODE
+        FROM hcrm_customer_contact hcc
+        <where>
+            1=1
+            <if test="customerId!= null">
+                and hcc.CUSTOMER_ID = #{customerId,jdbcType=DECIMAL}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByCustomerId" parameterType="java.lang.Long" >
+        DELETE FROM hcrm_customer_contact
+        WHERE CUSTOMER_ID = #{customerId,jdbcType=DECIMAL}
+    </delete>
+
+</mapper>

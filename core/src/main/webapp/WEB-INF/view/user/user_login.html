@@ -1,0 +1,130 @@
+<#include "../head/header.html">
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+    });
+
+    function login(){
+        if(checkFrom()){
+            $.ajax({
+                url: '${base.contextPath}/login/user/login',
+                type: 'POST',
+                dataType: "json",
+                data:JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if(result.success){
+                        kendo.ui.showInfoDialog({
+                            title: $l('hap.tip.info'),
+                            message: $l("hap.success")
+                        });
+                    } else {
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message : result.message
+                        });
+                    }
+                }
+            });
+        }
+    }
+    //表单校验
+    function checkFrom() {
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+
+</script>
+<style>
+    .div{
+        margin:0 auto;
+        width:90rem;
+    }
+    .tab-p {
+        text-align: center;
+        font-size: 2rem;
+        margin: 0.7rem;
+        font-family: "Arial Black", arial-black;
+        font-weight: bold;
+    }
+    .div-out {
+
+    }
+
+    .font-p {
+        margin-top: 2rem;
+        height:3rem;
+        color: black;
+        font-size: 1.4rem;
+
+    }
+
+    .font-input {
+        margin-top: 1.5rem;
+        height: 3rem;
+        width: 100%;
+    }
+    .star{
+        padding-right: 1rem;
+        color: red;
+    }
+
+    .tab-btn{
+        float:right;
+        margin: 0.5rem;
+        font-size: 1.5rem;
+        color: #0a001f;
+    }
+</style>
+<body>
+<div class="div" id="pageContext">
+    <div id="baseMessage">
+        <!--登录-start-->
+        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#199ed8;border-radius:0.5rem;">
+            <div class="col-md-12 tab-p">登录页面</div>
+        </div>
+
+        <div class="row div-out" style="padding-top: 1rem">
+            <div class="col-md-2 font-p"> </div>
+            <div class="col-md-1 font-p">
+                <span class="star">*</span>账号
+            </div>
+            <div class="col-md-6 ">
+                <input id="userName" pattern="^[a-zA-Z0-9_-]{4,16}$" name="账号" validationMessage="长度为6到16位（字母，数字，下划线，减号）" required  type="text" class="font-input k-textbox k-valid"  data-bind="value:model.userName">
+            </div>
+            <div class="col-md-3 font-p"> </div>
+            <script>kendo.bind($('#userName'), viewModel);</script>
+
+        </div>
+        <div class="row div-out" style="padding-top: 1rem">
+            <div class="col-md-2 font-p"> </div>
+            <div class="col-md-1 font-p">
+                <span class="star">*</span>密码
+            </div>
+            <div class="col-md-6 ">
+                <input id="password" pattern="^[a-zA-Z0-9_-]{6,16}$" validationMessage="密码长度为6到16位（字母，数字，下划线，减号）" required name="密码" type="password" class="font-input k-textbox"  data-bind="value:model.password">
+            </div>
+            <div class="col-md-3 font-p"> </div>
+            <script>kendo.bind($('#password'), viewModel);</script>
+        </div>
+
+            <div class="col-md-12 font-p" style="text-align: center">
+             <span class="btn btn-success k-grid-add"
+              onclick="login()"><i class="fa fa-arrow-circle-o-up" style="margin-right:3px;"></i>登录</span>
+            </div>
+    </div>
+    <!--登录-end-->
+</body>
+</html>

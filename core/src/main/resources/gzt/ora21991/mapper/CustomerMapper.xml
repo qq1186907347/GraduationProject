@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="gzt.ora21991.mapper.CustomerMapper">
+    <resultMap id="BaseResultMap" type="gzt.ora21991.dto.Customer">
+        <result column="CUSTOMER_ID" property="customerId" jdbcType="DECIMAL"/>
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR"/>
+        <result column="FULL_NAME" property="fullName" jdbcType="VARCHAR"/>
+        <result column="ENGLISH_NAME" property="englishName" jdbcType="VARCHAR"/>
+        <result column="CREDIT_CODE" property="creditCode" jdbcType="VARCHAR"/>
+        <result column="DUTY_PARAGRAPH" property="dutyParagraph" jdbcType="VARCHAR"/>
+        <result column="CUSTOMER_AMOUNT" property="customerAmount" jdbcType="DECIMAL"/>
+        <result column="PARENT_CUSTOMERS_ID" property="parentCustomersId" jdbcType="DECIMAL"/>
+        <result column="ADDRESS_COUNTRY" property="addressCountry" jdbcType="VARCHAR"/>
+        <result column="ADDRESS_PROVINCE" property="addressProvince" jdbcType="VARCHAR"/>
+        <result column="ADDRESS_CITY" property="addressCity" jdbcType="VARCHAR"/>
+        <result column="ADDRESS_ZONE" property="addressZone" jdbcType="VARCHAR"/>
+        <result column="ADDRESS_DETAILS" property="addressDetails" jdbcType="VARCHAR"/>
+        <result column="PHONE" property="phone" jdbcType="VARCHAR"/>
+        <result column="WEBSITE" property="website" jdbcType="VARCHAR"/>
+        <result column="IS_LISTED" property="isListed" jdbcType="VARCHAR"/>
+        <result column="OTHER_DESCRIPTION" property="otherDescription" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectByCustomerId" resultMap="BaseResultMap" parameterType="gzt.ora21991.dto.Customer">
+        SELECT
+        hc.CUSTOMER_ID,
+        hc.ENGLISH_NAME,
+        hc.CUSTOMER_CODE,
+        hc.FULL_NAME,
+        hc.CREDIT_CODE,
+        hc.DUTY_PARAGRAPH,
+        hc.CUSTOMER_AMOUNT,
+        hc.PARENT_CUSTOMERS_ID,
+        hc.ADDRESS_COUNTRY,
+        hc.ADDRESS_PROVINCE,
+        hc.ADDRESS_CITY,
+        hc.ADDRESS_ZONE,
+        hc.ADDRESS_DETAILS,
+        hc.PHONE,
+        hc.WEBSITE,
+        hc.IS_LISTED
+        FROM
+        hcrm_customer hc
+        <where>
+        1=1
+            <if test="customerId!= null">
+                and hc.CUSTOMER_ID = #{customerId,jdbcType=DECIMAL}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectALLCustomer" resultMap="BaseResultMap" parameterType="gzt.ora21991.dto.Customer">
+        select
+		hc.CUSTOMER_ID,
+        hc.ENGLISH_NAME,
+        hc.CUSTOMER_CODE,
+        hc.FULL_NAME,
+        hc.CREDIT_CODE,
+        hc.DUTY_PARAGRAPH,
+        hc.CUSTOMER_AMOUNT,
+        hc.PARENT_CUSTOMERS_ID,
+        hc.ADDRESS_COUNTRY,
+        hc.ADDRESS_PROVINCE,
+        hc.ADDRESS_CITY,
+        hc.ADDRESS_ZONE,
+        hc.ADDRESS_DETAILS,
+        hc.PHONE,
+        hc.WEBSITE,
+        hc.IS_LISTED,
+		hcc.`NAME`
+        from hcrm_customer_contact hcc,hcrm_customer hc
+      <where>
+          hcc.CUSTOMER_ID=hc.CUSTOMER_ID
+          AND hcc.CONTACT_TYPE='HCRM_MAJOR'
+          <if test="customerId!= null">
+              and hc.CUSTOMER_ID = #{customerId,jdbcType=DECIMAL}
+          </if>
+          <if test="addressCountry!= null">
+              and hc.ADDRESS_COUNTRY = #{addressCountry,jdbcType=VARCHAR}
+          </if>
+          <if test="isListed!= null">
+              and hc.IS_LISTED = #{isListed,jdbcType=VARCHAR}
+          </if>
+          <if test="parentCustomersId!= null">
+              and hc.PARENT_CUSTOMERS_ID = #{parentCustomersId,jdbcType=DECIMAL}
+          </if>
+          <if test="createdBy!= null">
+              and hc.CREATED_BY = #{createdBy,jdbcType=DECIMAL}
+          </if>
+      </where>
+    </select>
+    
+</mapper>
