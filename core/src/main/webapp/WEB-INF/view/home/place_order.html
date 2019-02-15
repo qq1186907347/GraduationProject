@@ -1,0 +1,345 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <link href="${base.contextPath}/resources/upload/favicon.png?v=${Session.sysFaviconVersion!}" rel="shortcut icon"/>
+    <!--[if IE 8]>
+    <script src="${base.contextPath}/lib/polyfill/respond.min.js"></script>
+    <script src="${base.contextPath}/lib/polyfill/es5-shim.min.js"></script>
+    <![endif]-->
+    <script src="${base.contextPath}/lib/kendoui/js/jquery.min.js"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/kendo.all.min.js?v=20181015"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/jszip.min.js"></script>
+
+    <link href="${base.contextPath}/lib/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${base.contextPath}/lib/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+    <link href="${base.contextPath}/lib/kendoui/styles/kendo.common-${base.getTheme().getName()}.min.css?v=20181015" rel="stylesheet" type="text/css"/>
+    <link href="${base.contextPath}/lib/kendoui/styles/kendo.${base.getTheme().getName()}.min.css?v=20181015" rel="stylesheet" type="text/css"/>
+
+    <!-- <link href="${base.contextPath}/lib/kendoui/styles/kendo.common.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${base.contextPath}/lib/kendoui/styles/kendo.uniform.min.css" rel="stylesheet" type="text/css"/> -->
+
+    <script src="${base.contextPath}/lib/kendoui/js/cultures/kendo.culture.${base.locale.toString()?replace('_','-')}.js?v=20181015"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/messages/kendo.messages.${base.locale.toString()?replace('_','-')}.js?v=20181015"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/kendo.hap.js?v=20181015"></script>
+    <script src="${base.contextPath}/lib/assets/global/plugins/jquery.blockui.min.js"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/jquery.placeholder.js"></script>
+    <style>
+        input::-ms-clear{display:none;}
+        .my-placeholder { color: #aaa; }
+    </style>
+    <script>
+        _basePath = '${base.contextPath}', _locale = '${base.locale}';
+        kendo.culture("${base.locale.toString()?replace('_','-')}");
+        _currentFunctionCode = '${RequestParameters.functionCode!}';
+        window.accessConfig = ${accessService.accessData()};
+        hotKeys = [];
+        $(function() {
+            if( ! ("placeholder" in document.createElement('input'))){
+                $('input, textarea').placeholder({customClass:'my-placeholder'});
+            }
+        });
+    </script>
+    <script src="${base.contextPath}/common/hotkey"></script>
+    <script src="${base.contextPath}/common/prompts"></script>
+    <title>驾车路线规划</title>
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=3.0&ak=yGwIhWc00ka3dWuQPh30aFlGdGG0FBaF"></script>
+    <style type="text/css">
+        body, html, #container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+</head>
+<script>
+    var viewModel = kendo.observable({
+        model: {},
+    });
+
+    //卡车类型窗口
+    function openCarTypeWindow() {
+        var url = "${base.contextPath}/home/car_type.html";
+        Hap.createWindow('#carType-Window',{
+            width: '40%',
+            height: '70%',
+            title: '卡车类型',
+            url: url
+        }).center().open();
+    }
+
+    //起始地址窗口
+    function openAddressWindow1() {
+        //设置地址类型为起始地址
+        $('#addressType').val("start");
+        var url = "${base.contextPath}/home/order_address.html";
+        Hap.createWindow('#address-Window',{
+            width: '40%',
+            height: '70%',
+            title: '起点',
+            url: url
+        }).center().open();
+    }
+    //目的地地址窗口
+    function openAddressWindow2() {
+        //设置地址类型为目的地地址，以便选择地址窗口进行调用
+        $('#addressType').val("end");
+        var url = "${base.contextPath}/home/order_address.html";
+        Hap.createWindow('#address-Window',{
+            width: '40%',
+            height: '70%',
+            title: '目的地',
+            url: url
+        }).center().open();
+    }
+    function placeOrder(){
+        if(checkFrom()){
+            loadData();
+            console.log("place_order");
+        }
+    }
+    //表单校验
+    function checkFrom() {
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+
+</script>
+<style>
+    .font-input {
+        width: 90%;
+        border-color: #00a2d4;
+        border-style: solid;
+        border-top-width: 0;
+        border-right-width: 0;
+        border-bottom-width: 0.1rem;
+        border-left-width: 0;
+    }
+    .concact-input {
+        width: 80%;
+        border-color: #00a2d4;
+        border-style: solid;
+        border-top-width: 0;
+        border-right-width: 0;
+        border-bottom-width: 0.1rem;
+        border-left-width: 0;
+    }
+    .row-style{
+        border-radius: 0.1rem 0.1rem 0.1rem 0.1rem;
+        border: 0.1rem solid #a4abb5;
+    }
+    .line-style{
+        margin-top: 2rem;
+    }
+</style>
+<body>
+<div class="row" id="baseMessage">
+    <div class="col-md-8 row-style">
+        <div id="container">
+            <div class="col-md-12 line-style">
+                请输入起点和目的地(必填)：
+            </div>
+            <input type="hidden" id="addressType">
+            <div class="col-md-12 line-style">
+                <i class="fa fa-tree" style="color: green"></i>
+                <input id="startAddress" name="起点" required onclick="openAddressWindow1()"
+                 placeholder="单击选择起点地址"
+                 type="text" class="font-input k-textbox k-valid"
+                 data-bind="value:model.userName">
+            </div>
+
+            <script>kendo.bind($('#startAddress'), viewModel);</script>
+            <div class="col-md-12"><p>-</p></div>
+            <div class="col-md-12 line-style">
+                <i class="fa fa-tree" style="color:darkred"></i>
+                <input id="endAddress" required name="目的地"  onclick="openAddressWindow2()"
+                       placeholder="单击选择目的地地址" type="text"
+                       class="font-input k-textbox"
+                        data-bind="value:model.endAddress">
+            </div>
+
+            <script>kendo.bind($('#endAddress'), viewModel);</script>
+            <div id="address-Window"></div>
+
+            <div class="col-md-12 line-style">货物
+                <input  id="goods" required
+                       name="货物" placeholder="单击选择货物" type="text"
+                       class="font-input k-textbox"
+                       data-bind="value:model.goods">
+            </div>
+            <div class="col-md-12 line-style">卡车类型
+                <input  id="carId" required
+                        name="卡车类型" type="hidden">
+                <input  id="carType" required
+                       name="卡车类型" placeholder="单击选择卡车类型" type="text"
+                       class="font-input k-textbox"
+                        onclick="openCarTypeWindow()"
+                       data-bind="value:model.carType">
+            </div>
+            <div id="carType-Window"></div>
+            <div class="col-md-12 line-style">备注</div>
+            <div class="col-md-12 line-style">
+                <textarea placeholder="备注" style="width: 100%;height: 30rem"></textarea>
+
+            </div>
+            <script>kendo.bind($('#endAddress'), viewModel);</script>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row row-style" style="padding-top: 3rem">
+        <p style="color: #2a73ce">联系人资料:</p>
+        <div class="col-md-12">
+            <i class="fa fa-user" style="color: #0c80df;margin: 2rem"></i>
+            <input  id="contactName" required
+                   name="联系人" placeholder="联系人" type="text"
+                   class="concact-input k-textbox"
+                   data-bind="value:model.contactName">
+        </div>
+            <script>kendo.bind($('#contactName'), viewModel);</script>
+        <div class="col-md-12">
+            <i class="fa fa-phone" style="color: #0c80df;margin: 2rem"></i>
+            <input  id="contactPhone" required
+                   name="联系人电话" placeholder="联系人电话" type="text"
+                   class=" k-textbox concact-input"
+                    validationMessage="电话有误，格式：1【3,4,5,7,8】xxxx,11位"    pattern="^[1][3,4,5,7,8][0-9]{9}$"
+                   data-bind="value:model.contactPhone"></div>
+        </div>
+        <script>kendo.bind($('#contactPhone'), viewModel);</script>
+        <div class="col-md-12 line-style" style="text-align: center;color:#999693 ">高速、停车费用与司机协商</div>
+        <div class="col-md-12 line-style">
+            <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="placeOrder()">现在用车</span>
+            <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;">预约</span>
+        </div>
+
+        <div class="col-md-4 line-style"  style="text-align: left;color:#999693;">总路程</div>
+        <div class="col-md-8 line-style" style="text-align: right;color:#999693;">
+           <input  readonly="readonly" id="totalDistance" type="text" style="border-bottom-width: 0rem; "
+                                  class=" k-textbox concact-input"
+                                  data-bind="value:model.totalDistance">
+        </div>
+
+        <div class="col-md-4 line-style"  style="text-align: left;color:#999693;">预计耗时</div>
+        <div class="col-md-8 line-style" style="text-align: right;color:#999693;">
+            <input  readonly="readonly" id="totalTime" type="text" style="border-bottom-width: 0rem; "
+                    class=" k-textbox concact-input"
+                    data-bind="value:model.totalTime">
+        </div>
+
+
+        <div class="col-md-5 line-style"  style="text-align: left;color:#999693;">价格</div>
+        <div class="col-md-5 line-style" style="text-align: right;color:#999693;">
+            <span>＄</span><input  readonly="readonly" id="price" type="text" style="border-bottom-width: 0rem; "
+                                  class=" k-textbox concact-input"
+                                  data-bind="value:model.price">
+        </div>
+        <script>kendo.bind($('#price'), viewModel);</script>
+    </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    //加载起始地和目的地的经纬度
+    function getLn_La(startAddress,endAddress) {
+        var map = new BMap.Map("container");
+        var start = new BMap.Point(110.365067, 21.257463);
+        var end = new BMap.Point(116.395645, 39.929986);
+        // 创建地址解析器实例
+        var myGeo = new BMap.Geocoder();
+        console.log(startAddress);
+        console.log(endAddress);
+        myGeo.getPoint(startAddress, function (point) {
+            if (point) {
+                start = new BMap.Point(point.lng, point.lat);
+                console.log(start);
+            }
+        });
+        myGeo.getPoint(endAddress, function (point) {
+            if (point) {
+                end = new BMap.Point(point.lng, point.lat);
+                console.log(end);
+            }
+        });
+        //加载地图和路程参数
+        setTimeout(function () {
+            loadMap(start,end);
+        }, "1000");
+
+    }
+
+    //显示路线图
+    function loadMap(startPoint,endPoint) {
+        // 百度地图API功能
+        var map = new BMap.Map("container");
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 12);
+        // 将地址解析结果显示在地图上，并调整地图视野;
+        var output = "从上地到西单驾车需要";
+        var searchComplete = function (results) {
+            if (transit.getStatus() != BMAP_STATUS_SUCCESS) {
+                return;
+            }
+            var plan = results.getPlan(0);
+            //获取距离
+            $('#totalDistance').val(plan.getDistance(true));
+            //获取时间
+            $('#totalTime').val(plan.getDuration(true));
+            //获得价钱
+            var temp=plan.getDistance(true);
+            var totalPrice=getTotalPrice(temp.substring(0,temp.length-2));
+            $('#price').val(totalPrice);
+            console.log("总距离："+temp.substring(0,temp.length-2));
+
+        }
+        var transit = new BMap.DrivingRoute(map, {
+            renderOptions: {map: map},
+            onSearchComplete: searchComplete,
+            onPolylinesSet: function () {
+                setTimeout(function () {
+                }, "10");
+            }
+        });
+        //启动鼠标滚轮操作
+        map.enableScrollWheelZoom();
+        transit.search(startPoint, endPoint);
+        //110.365067, lat: 21.257463--116.395645, lat: 39.929986
+
+    }
+    //获取路程和时间
+    function loadData() {
+        //获取起始地址和目的地
+        var startAddress=$("#startAddress").val();
+        var endAddress=$("#endAddress").val();
+        getLn_La(startAddress,endAddress);
+    }
+    function  getTotalPrice(totalDistance) {
+        debugger;
+        var totalDistance2=1;
+        totalDistance2=parseFloat(totalDistance);
+        var startPrice=parseFloat($('#startDistance').val());
+        var startDistance=parseFloat($('#startDistance').val());
+        var addPrice=parseFloat($('#addPrice').val());
+        if(totalDistance<startDistance){
+            return startPrice;
+        }else{
+            return startPrice+(totalDistance2-startDistance)*addPrice;
+        }
+    }
+</script>
+<input id="startPrice" type="hidden">
+<input id="startDistance" type="hidden">
+<input id="addPrice" type="hidden">
+</body>
+</html>

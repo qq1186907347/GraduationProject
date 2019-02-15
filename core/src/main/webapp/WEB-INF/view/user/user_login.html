@@ -1,4 +1,4 @@
-<#include "../head/header.html">
+<#include "../include/header.html">
 <!--在代码维护里面定义相应的数据-->
 <script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
 
@@ -21,6 +21,7 @@
                             title: $l('hap.tip.info'),
                             message: $l("hap.success")
                         });
+                        window.parent.$("#login-window").data("kendoWindow").close();
                     } else {
                         kendo.ui.showErrorDialog({
                             title: $l('hap.error'),
@@ -50,7 +51,7 @@
 <style>
     .div{
         margin:0 auto;
-        width:90rem;
+        width:50rem;
     }
     .tab-p {
         text-align: center;
@@ -60,11 +61,11 @@
         font-weight: bold;
     }
     .div-out {
+        color: green;
 
     }
 
     .font-p {
-        margin-top: 2rem;
         height:3rem;
         color: black;
         font-size: 1.4rem;
@@ -72,7 +73,6 @@
     }
 
     .font-input {
-        margin-top: 1.5rem;
         height: 3rem;
         width: 100%;
     }
@@ -81,22 +81,16 @@
         color: red;
     }
 
-    .tab-btn{
-        float:right;
-        margin: 0.5rem;
-        font-size: 1.5rem;
-        color: #0a001f;
-    }
 </style>
 <body>
 <div class="div" id="pageContext">
     <div id="baseMessage">
         <!--登录-start-->
-        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#199ed8;border-radius:0.5rem;">
+        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#f1f1f1;border-radius:0.5rem;">
             <div class="col-md-12 tab-p">登录页面</div>
         </div>
 
-        <div class="row div-out" style="padding-top: 1rem">
+        <div class="row div-out" >
             <div class="col-md-2 font-p"> </div>
             <div class="col-md-1 font-p">
                 <span class="star">*</span>账号
@@ -108,7 +102,7 @@
             <script>kendo.bind($('#userName'), viewModel);</script>
 
         </div>
-        <div class="row div-out" style="padding-top: 1rem">
+        <div class="row div-out" >
             <div class="col-md-2 font-p"> </div>
             <div class="col-md-1 font-p">
                 <span class="star">*</span>密码

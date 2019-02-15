@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.AddressMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.Address">
+        <result column="address_id" property="addressId" jdbcType="DECIMAL" />
+        <result column="province" property="province" jdbcType="VARCHAR" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="town" property="town" jdbcType="VARCHAR" />
+        <result column="address_detail" property="addressDetail" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <insert id="saveAddress">
+    INSERT  INTO address (province, city, town,address_detail,user_id)
+    VALUES (#{province}, #{city}, #{town},#{addressDetail},#{userId})
+    </insert>
+
+    <select id="selectAddress" resultMap="BaseResultMap" parameterType="graduation.dto.Address">
+        SELECT
+       *
+        FROM address a
+        <where>
+      a.user_id = #{userId,jdbcType=DECIMAL}
+        </where>
+    </select>
+
+
+</mapper>

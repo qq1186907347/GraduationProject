@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.CarTypeMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.CarType">
+        <result column="car_id" property="carId" jdbcType="DECIMAL" />
+        <result column="car_type" property="carType" jdbcType="VARCHAR" />
+        <result column="car_long" property="carLong" jdbcType="VARCHAR" />
+        <result column="car_width" property="carWidth" jdbcType="VARCHAR" />
+        <result column="car_height" property="carHeight" jdbcType="VARCHAR" />
+        <result column="start_price" property="startPrice" jdbcType="VARCHAR" />
+        <result column="add_price" property="addPrice" jdbcType="VARCHAR" />
+        <result column="start_distance" property="startDistance" jdbcType="VARCHAR" />
+        <result column="start_goods_weight" property="startGoodsWeight" jdbcType="VARCHAR" />
+        <result column="end_goods_weight" property="endGoodsWeight" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+</mapper>
