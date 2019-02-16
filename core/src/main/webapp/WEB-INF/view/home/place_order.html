@@ -65,8 +65,8 @@
     function openCarTypeWindow() {
         var url = "${base.contextPath}/home/car_type.html";
         Hap.createWindow('#carType-Window',{
-            width: '40%',
-            height: '70%',
+            width: '50%',
+            height: '80%',
             title: '卡车类型',
             url: url
         }).center().open();
@@ -78,8 +78,8 @@
         $('#addressType').val("start");
         var url = "${base.contextPath}/home/order_address.html";
         Hap.createWindow('#address-Window',{
-            width: '40%',
-            height: '70%',
+            width: '50%',
+            height: '80%',
             title: '起点',
             url: url
         }).center().open();
@@ -90,9 +90,20 @@
         $('#addressType').val("end");
         var url = "${base.contextPath}/home/order_address.html";
         Hap.createWindow('#address-Window',{
-            width: '40%',
-            height: '70%',
+            width: '50%',
+            height: '80%',
             title: '目的地',
+            url: url
+        }).center().open();
+    }
+
+    //货物窗口
+    function openGoodsWindow() {
+        var url = "${base.contextPath}/home/order_goods_collect.html";
+        Hap.createWindow('#goods-window',{
+            width: '50%',
+            height: '80%',
+            title: '货物',
             url: url
         }).center().open();
     }
@@ -175,10 +186,11 @@
             <div id="address-Window"></div>
 
             <div class="col-md-12 line-style">货物
-                <input  id="goods" required
+                <input  id="goods" required onclick="openGoodsWindow()"
                        name="货物" placeholder="单击选择货物" type="text"
                        class="font-input k-textbox"
                        data-bind="value:model.goods">
+                <div id="goods-window"></div>
             </div>
             <div class="col-md-12 line-style">卡车类型
                 <input  id="carId" required
@@ -325,7 +337,6 @@
         getLn_La(startAddress,endAddress);
     }
     function  getTotalPrice(totalDistance) {
-        debugger;
         var totalDistance2=1;
         totalDistance2=parseFloat(totalDistance);
         var startPrice=parseFloat($('#startDistance').val());

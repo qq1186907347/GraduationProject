@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.GoodsCollectMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.GoodsCollect">
+        <result column="collect_id" property="collectId" jdbcType="DECIMAL"/>
+        <result column="collect_name" property="collectName" jdbcType="VARCHAR"/>
+        <result column="collect_type" property="collectType" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+    </resultMap>
+
+<insert id="addCollect">
+    INSERT  INTO goods_collect (collect_name, collect_type,user_id)
+    VALUES (#{collectName}, #{collectType}, #{userId})
+</insert>
+
+<select id="selectCollect" resultMap="BaseResultMap" parameterType="graduation.dto.GoodsCollect">
+        SELECT
+        gc.collect_id,
+        gc.collect_name,
+        gc.collect_type
+         from
+        goods_collect gc
+        <where>
+            gc.user_id = #{userId,jdbcType=DECIMAL}
+            <if test="collectId!= null">
+                and gc.collect_id = #{collectId,jdbcType=DECIMAL}
+            </if>
+        </where>
+</select>
+
+
+</mapper>
