@@ -28,7 +28,17 @@
                 },
                 success: function (data) {
                     kendo.ui.showInfoDialog({
-                        message:"保存成功！"
+                        message:"保存成功！",
+                        buttons: [{
+                            text: kendo.ui.Widget.prototype.options.messages['ok'],
+                            type: 'primary',
+                            click: function (e) {
+                                window.parent.viewModel.refresh();
+                                window.parent.$("#new-window").data("kendoWindow").close();
+                                e.dialog.destroy();
+                                e.deferred.resolve({ button: 'OK' });
+                            }
+                        }],
                     });
                   /*  // refresh parent view
                     window.parent.viewModel.refresh();
@@ -139,7 +149,7 @@
         dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: BaseUrl + "/goods/query",
+                    url: BaseUrl + "/goods/query/-1",
                     type: "POST",
                     dataType: "json"
                 },

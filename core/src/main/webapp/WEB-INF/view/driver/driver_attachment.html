@@ -1,0 +1,9 @@
+<#include "../include/header.html">
+<body>
+<div style="width:780px;margin:10px;">
+    <p style="color: red;">需要车辆手持身份证图片，驾驶证，身份证正反面图片</p>
+    ${attachmentProvider.getAttachHtml("DRIVER_REAL_NAME",
+    RequestParameters.driverId,base.locale, base.contextPath,true,true)}
+</div>
+</body>
+</html>

@@ -42,11 +42,27 @@ public class AddressController extends BaseController {
     @ResponseBody
     public ResponseData saveAddress(@RequestBody  Address dto, HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
+        ResponseData responseData=new ResponseData();
         HttpSession session = request.getSession();
         //得到用户id
         Long userId = (Long) session.getAttribute("userId");
         dto.setUserId(userId);
         try{
+            if(dto.getProvince().equals("省份")){
+                responseData.setSuccess(false);
+                responseData.setMessage("省份填写不正确!");
+                return  responseData;
+            }
+            if(dto.getCity().equals("地级市")){
+                responseData.setSuccess(false);
+                responseData.setMessage("地级市填写不正确!");
+                return  responseData;
+            }
+            if(dto.getTown().equals("市、县级市、县")){
+                responseData.setSuccess(false);
+                responseData.setMessage("(市、县级市、县)填写不正确!");
+                return  responseData;
+            }
             service.saveAddress(dto);
         }catch (Exception e ){
             e.printStackTrace();

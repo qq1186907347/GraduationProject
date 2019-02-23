@@ -1,4 +1,6 @@
-<#include "../include/header.html">
+<#include "../head/header2.html">
+<title>司机注册</title>
+</head>
 <!--在代码维护里面定义相应的数据-->
 <script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
 
@@ -10,7 +12,7 @@
     function register(){
         if(checkFrom()){
             $.ajax({
-                url: '${base.contextPath}/login/user/register',
+                url: '${base.contextPath}/driver/register',
                 type: 'POST',
                 dataType: "json",
                 data:JSON.stringify(viewModel.model),
@@ -19,10 +21,17 @@
                     if(result.success){
                         kendo.ui.showInfoDialog({
                             title: $l('hap.tip.info'),
-                            message: "注册成功"
+                            message: "注册成功。",
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.location.href="${base.contextPath}/home/index_driver.html";
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
                         });
-                        // close this window
-                        window.parent.$("#register-window").data("kendoWindow").close();
                     } else {
                         kendo.ui.showErrorDialog({
                             title: $l('hap.error'),
@@ -96,7 +105,7 @@
     <div id="baseMessage">
         <!--注册-start-->
         <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#199ed8;border-radius:0.5rem;">
-            <div class="col-md-12 tab-p">注册页面</div>
+            <div class="col-md-12 tab-p">司机注册页面</div>
         </div>
 
         <div class="row div-out" >
@@ -147,9 +156,20 @@
             </div>
             <script>kendo.bind($('#phone'), viewModel);</script>
         </div>
-            <div class="col-md-12 font-p" style="text-align: center">
-             <span class="btn btn-primary k-grid-add" onclick="register()"><i class="fa fa-plus-square" ></i>注册</span>
+        <div class="row div-out" >
+            <div class="col-md-5 font-p">
+                <span class="star">*</span>email
             </div>
+            <div class="col-md-5 ">
+                <input id="email" name="email" required type="text" class="k-textbox k-valid font-input "  data-bind="value:model.email"
+                        placeholder="xxx@xxx"   pattern="^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$">
+            </div>
+            <script>kendo.bind($('#email'), viewModel);</script>
+        </div>
+        <div class="col-md-12 font-p" style="text-align: center">
+             <span class="btn btn-primary k-grid-add"
+                    onclick="register()"><i class="fa fa-plus-square" ></i>注册</span>
+        </div>
         <div id="attachment-window"></div>
     </div>
     <!--注册-end-->

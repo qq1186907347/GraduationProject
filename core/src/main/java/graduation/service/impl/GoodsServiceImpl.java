@@ -20,6 +20,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<Goods> implements IGoodsSe
 
     @Override
     public List<Goods> selectByCollectId(IRequest requestContext, Goods dto, int page, int pageSize) {
+        //分页
         PageHelper.startPage(page, pageSize);
         return goodsMapper.selectByCollectId(dto);
     }

@@ -34,6 +34,24 @@ public class User2Controller extends BaseController {
         return new ResponseData(service.select(requestContext, dto, page, pageSize));
     }
 
+    @RequestMapping(value = "/user/getUserId")
+    @ResponseBody
+    public ResponseData getUserId(User2 dto,HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        ResponseData responseData=new ResponseData();
+        //得到用户id
+        Long userId = (Long) session.getAttribute("userId");
+        if(userId!=null){
+            responseData.setMessage(String.valueOf(userId));
+
+        }else {
+            responseData.setMessage("未登录，请登录");
+            responseData.setSuccess(false);
+
+        }
+        return responseData;
+    }
+
     @RequestMapping(value = "/login/user/register")
     @ResponseBody
     public ResponseData register(@RequestBody User2 dto, HttpServletRequest request) {
@@ -98,6 +116,15 @@ public class User2Controller extends BaseController {
     @ResponseBody
     public ResponseData delete(HttpServletRequest request, @RequestBody List<User2> dto) {
         service.batchDelete(dto);
+        return new ResponseData();
+    }
+    @RequestMapping(value = "/user/setOut")
+    @ResponseBody
+    public ResponseData setOut(@RequestBody User2 dto, HttpServletRequest request) {
+        //使用request对象的getSession()获取session，如果session不存在则创建一个
+        HttpSession session = request.getSession();
+        //将数据存储到session中
+        session.setAttribute("userId",null);
         return new ResponseData();
     }
 }

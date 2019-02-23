@@ -1,4 +1,6 @@
-<#include "../include/header.html">
+<#include "../head/header2.html">
+<title>用户登录</title>
+</head>
 <!--在代码维护里面定义相应的数据-->
 <script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
 
@@ -19,9 +21,18 @@
                     if(result.success){
                         kendo.ui.showInfoDialog({
                             title: $l('hap.tip.info'),
-                            message: $l("hap.success")
+                            message: '登录成功',
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.location.href="${base.contextPath}/home/index.html";
+                                    window.parent.$("#login-window").data("kendoWindow").close();
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
                         });
-                        window.parent.$("#login-window").data("kendoWindow").close();
                     } else {
                         kendo.ui.showErrorDialog({
                             title: $l('hap.error'),

@@ -25,7 +25,7 @@
         if (checkFrom()) {
             console.log(JSON.stringify(viewModel.model));
             $.ajax({
-                url: 'http://localhost:8080/address/add',
+                url: '${base.contextPath}/address/add',
                 type: 'POST',
                 dataType: "json",
                 data: JSON.stringify(viewModel.model),
@@ -34,7 +34,17 @@
                     if (result.success) {
                         kendo.ui.showInfoDialog({
                             title: $l('hap.tip.info'),
-                            message: $l("hap.success")
+                            message: $l("hap.success"),
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.viewModel.refresh();
+                                    window.parent.$("#new-window").data("kendoWindow").close();
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
                         });
                     } else {
                         kendo.ui.showErrorDialog({
@@ -880,7 +890,7 @@
         "澎湖", "屏东", "台东", "台南", "桃园", "新竹", "宜兰", "云林", "彰化"]);
     dsy.add("0", ["北京市", "天津市", "上海市", "重庆市", "河北省", "山西省", "内蒙古", "辽宁省", "吉林省",
         "黑龙江省", "江苏省", "浙江省", "安徽省", "福建省", "江西省", "山东省", "河南省", "湖北省", "湖南省",
-        "广东省", "广西", "海南省", "四川省", "贵州省", "云南省", "西藏", "陕西省", "甘肃省", "青海省",
+        "广东省", "广西省", "海南省", "四川省", "贵州省", "云南省", "西藏", "陕西省", "甘肃省", "青海省",
         "宁夏", "新疆", "香港", "澳门", "台湾省"]);
 
     var s = ["province", "city", "town"];
@@ -913,7 +923,7 @@
     </div>
 
     <div class="col-md-12 line-style">
-        <span>详细地址</span><input id="addressDetail" name="详细地址" style="width: 20%;margin-left: 1rem" required type="text"
+        <span>详细地址</span><input id="addressDetail" name="详细地址" style="width: 70%;margin-left: 1rem" required type="text"
                                 class=" k-textbox k-valid" data-bind="value:model.addressDetail">
         <script>kendo.bind($('#addressDetail'), viewModel);</script>
     </div>

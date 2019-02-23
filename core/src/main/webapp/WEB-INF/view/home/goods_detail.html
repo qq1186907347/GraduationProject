@@ -68,22 +68,19 @@
 
         <div class="row div-out" style="padding-top: 1rem">
             <div class="col-md-1 font-p">货物名称</div>
-            <div class="col-md-12 ">
-                <input required readonly="readonly" name="货物名称" id="collectName" type="text" class="font-input k-textbox"
-                       data-bind="value:model.collectName">
+            <div class="col-md-4 ">
+                <input required name="货物名称" id="collectName" type="text" class="font-input k-textbox" data-bind="value:model.collectName">
             </div>
             <script>kendo.bind($('#collectName'), viewModel);</script>
-        </div>
 
-        <div class="row div-out">
-            <div class="col-md-1 font-p">货物类别</div>
-            <div class="col-md-12">
-                <input required readonly="readonly" name="货物类别" type="text" id="collectType" class="font-input k-textbox"
-                       data-bind="value:model.collectType">
+            <div class="row div-out">
+                <div class="col-md-1 font-p">货物类别</div>
+                <div class="col-md-4">
+                    <input  required  name="货物类别" type="text" id="collectType" class="font-input k-textbox" data-bind="value:model.collectType">
+                </div>
+                <script>kendo.bind($('#collectType'), viewModel);</script>
             </div>
-            <script>kendo.bind($('#collectType'), viewModel);</script>
         </div>
-    </div>
     <!--基本信息-end-->
     <p>&nbsp;</p>
     <!--货物详情-start-->

@@ -28,6 +28,8 @@
         }
         else{
             //赋值
+            window.parent.viewModel.model.set('carId',carId);
+
             window.parent.$("#carId").val(carId);
             window.parent.$("#carType").val(carTypeValue);
             window.parent.$("#startPrice").val(startPrice);

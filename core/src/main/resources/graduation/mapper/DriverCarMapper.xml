@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.DriverCarMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.DriverCar">
+        <result column="car_id" property="carId" jdbcType="DECIMAL"/>
+        <result column="car_type" property="carType" jdbcType="VARCHAR"/>
+        <result column="plate_number" property="plateNumber" jdbcType="VARCHAR"/>
+        <result column="car_long" property="carLong" jdbcType="VARCHAR"/>
+        <result column="car_height" property="carHeight" jdbcType="VARCHAR"/>
+        <result column="car_wide" property="carWide" jdbcType="VARCHAR"/>
+        <result column="car_age" property="carAge" jdbcType="VARCHAR"/>
+        <result column="car_tonnage" property="carTonnage" jdbcType="FLOAT"/>
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <insert id="addCar">
+    INSERT  INTO driver_car (car_type,plate_number,car_long,car_height,car_wide,car_age,car_tonnage,driver_id)
+    VALUES (#{carType}, #{plateNumber}, #{carLong},#{carHeight}, #{carWide}, #{carAge}, #{carTonnage}, #{driverId})
+</insert>
+
+    <select id="selectCars" resultMap="BaseResultMap" parameterType="graduation.dto.DriverCar">
+        SELECT * from
+        driver_car dc
+        <where>
+
+            1=1
+            <if test="driverId!= null">
+                and dc.driver_id = #{driverId,jdbcType=VARCHAR}
+            </if>
+            <if test="carTonnage!= null">
+                and dc.car_tonnage &gt;= #{carTonnage,jdbcType=FLOAT}
+                and dc.driver_id not in(select driver_id from user_order where order_status=0)
+                and dc.driver_id in(select driver_id from driver_message where message_status=1)
+            </if>
+            <if test="carType!= null">
+                and dc.car_type = #{carType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+</mapper>

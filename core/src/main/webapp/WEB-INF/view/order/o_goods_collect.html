@@ -11,9 +11,9 @@
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "GoodsCollect.collectName"/>'
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "OGoodsCollect.collectName"/>'
                    data-bind="value:model.collectName" class="k-textbox">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "GoodsCollect.collectType"/>'
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "OGoodsCollect.collectType"/>'
                    data-bind="value:model.collectType" class="k-textbox">
         <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
         <div style="clear:both"></div>
@@ -30,22 +30,22 @@
     dataSource = new kendo.data.DataSource({
         transport: {
             read: {
-                url: BaseUrl + "/goods/collect/query",
+                url: BaseUrl + "/o/goods/collect/query",
                 type: "POST",
                 dataType: "json"
             },
             update: {
-                url: BaseUrl + "/goods/collect/submit",
+                url: BaseUrl + "/o/goods/collect/submit",
                 type: "POST",
                 contentType: "application/json"
             },
             destroy: {
-                url: BaseUrl + "/goods/collect/remove",
+                url: BaseUrl + "/o/goods/collect/remove",
                 type: "POST",
                 contentType: "application/json"
             },
             create: {
-                url: BaseUrl + "/goods/collect/submit",
+                url: BaseUrl + "/o/goods/collect/submit",
                 type: "POST",
                 contentType: "application/json"
             },
@@ -90,17 +90,22 @@
         columns: [
             {
                 field: "collectId",
-                title: '<@spring.message "goodscollect.collectid"/>',
+                title: '<@spring.message "ogoodscollect.collectid"/>',
                 width: 120
             },
                     {
                 field: "collectName",
-                title: '<@spring.message "goodscollect.collectname"/>',
+                title: '<@spring.message "ogoodscollect.collectname"/>',
                 width: 120
             },
                     {
                 field: "collectType",
-                title: '<@spring.message "goodscollect.collecttype"/>',
+                title: '<@spring.message "ogoodscollect.collecttype"/>',
+                width: 120
+            },
+                    {
+                field: "userId",
+                title: '<@spring.message "ogoodscollect.userid"/>',
                 width: 120
             },
         ],

@@ -1,0 +1,1093 @@
+<#include "../head/header2.html">
+<title>司机端</title>
+</head>
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+<!-- 图标 -->
+<!--		<link rel="shortcut icon" href="${base.contextPath}/resources/images/favicon.ico">-->
+<!-- Web Fonts -->
+<!-- Bootstrap core CSS -->
+<link href="${base.contextPath}/resources/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Font Awesome CSS -->
+<link href="${base.contextPath}/resources/fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+<!-- Fontello CSS -->
+<link href="${base.contextPath}/resources/fonts/fontello/css/fontello.css" rel="stylesheet">
+<!-- Plugins -->
+<link href="${base.contextPath}/resources/plugins/rs-plugin/css/settings.css" media="screen" rel="stylesheet">
+<link href="${base.contextPath}/resources/plugins/rs-plugin/css/extralayers.css" media="screen" rel="stylesheet">
+<link href="${base.contextPath}/resources/plugins/magnific-popup/magnific-popup.css" rel="stylesheet">
+<link href="${base.contextPath}/resources/css/animations.css" rel="stylesheet">
+<link href="${base.contextPath}/resources/plugins/owl-carousel/owl.carousel.css" rel="stylesheet">
+<!-- iDea core CSS file -->
+<link href="${base.contextPath}/resources/css/style.css" rel="stylesheet">
+<!-- Color Scheme (In order to change the color scheme, replace the red.css with the color scheme that you prefer)-->
+<link href="${base.contextPath}/resources/css/skins/green.css" rel="stylesheet">
+<!-- Custom css -->
+<link href="${base.contextPath}/resources/css/custom.css" rel="stylesheet">
+<!-�C[if lt IE 9]-->
+<script type="text/javascript" src="${base.contextPath}/resources/js/html5shiv.js"></script>
+<script type="text/javascript" src="${base.contextPath}/resources/js/selectivizr.js"></script>
+<!--[endif]�C- >
+
+</head>
+
+
+<!--
+body classes:
+    "boxed": boxed layout mode e.g. <body class="boxed">
+    "pattern-1 ... pattern-9": background patterns for boxed layout mode e.g. <body class="boxed pattern-1">
+-->
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+    });
+
+    //加载数据
+    function getData() {
+        viewModel.model.set('driverId', '1');
+        $.ajax({
+            url: '${base.contextPath}/driver/getDriverId',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    $("#userlr").attr('style', 'display:none');
+                    $("#userlr2").removeAttr("style");
+                    isAuthenticated()
+
+                } else {
+                    kendo.ui.showErrorDialog({
+                        title: $l('hap.error'),
+                        message: result.message
+                    });
+                }
+            }
+        });
+    }
+
+    // 不要括号
+    window.onload = getData;
+
+    //验证是否实名认证了
+    function isAuthenticated() {
+        $.ajax({
+            url: '${base.contextPath}/driver/message/isAuthenticated',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    $("#realNameAuthentication").attr('style', 'display:none');
+                } else {
+                    viewModel.model.set('driverId',result.total);
+                    console.log("driverId:"+result.total);
+                    kendo.ui.showErrorDialog({
+                        title: $l('hap.error'),
+                        message: result.message
+                    });
+                    if(result.message=="实名审核中，请耐心等待"){
+                        $("#authentication").removeAttr("onclick");
+                        $("#authentication").attr('onclick', 'openAuthenticateWindow2()');
+                    }
+                }
+            }
+        });
+        
+    }
+
+
+    //登录窗口
+    function openLoginWindow() {
+        var url = "${base.contextPath}/user/driver_login.html";
+        Hap.createWindow('#login-window', {
+            width: '40%',
+            height: '60%',
+            title: '登录',
+            url: url
+        }).center().open();
+    }
+
+    //注册窗口
+    function openRegisterWindow() {
+        var url = "${base.contextPath}/user/driver_register.html";
+        Hap.createWindow('#register-window', {
+            width: '40%',
+            height: '80%',
+            title: '注册',
+            url: url
+        }).center().open();
+    }
+
+    //退出
+    function setOut() {
+        $.ajax({
+            url: '${base.contextPath}/driver/setOut',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    kendo.ui.showInfoDialog({
+                        title: $l('hap.tip.info'),
+                        message: $l("退出成功!"),
+                        buttons: [{
+                            text: kendo.ui.Widget.prototype.options.messages['ok'],
+                            type: 'primary',
+                            click: function (e) {
+                                $("#userlr2").attr('style', 'display:none');
+                                $("#userlr").removeAttr("style");
+                                e.dialog.destroy();
+                                e.deferred.resolve({button: 'OK'});
+                            }
+                        }],
+                    });
+
+                }
+            }
+        });
+    }
+
+    //认证窗口
+    function openAuthenticateWindow() {
+        var driverId=viewModel.model.get("driverId");
+        var url = "${base.contextPath}/driver/driver_real_name.html?driverId="+driverId;
+        Hap.createWindow('#authenticate-window',{
+            width: '90%',
+            height: '90%',
+            title: '司机实名认证',
+            url: url
+        }).center().open();
+    }
+    //认证窗口
+    function openAuthenticateWindow2() {
+        var driverId=viewModel.model.get("driverId");
+        var url = "${base.contextPath}/driver/driver_real_name2.html?driverId="+driverId;
+        Hap.createWindow('#authenticate-window',{
+            width: '90%',
+            height: '90%',
+            title: '司机实名认证',
+            url: url
+        }).center().open();
+    }
+
+
+</script>
+<body class="front">
+<!-- scrollToTop -->
+
+<!-- page wrapper start -->
+<!-- ================ -->
+<div class="page-wrapper" id="baseMessage">
+
+    <!-- header-top start -->
+    <!-- ================ -->
+    <div class="header-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-2 col-sm-6">
+
+
+                </div>
+                <div class="col-xs-10 col-sm-6">
+
+                    <!-- header-top-second start -->
+                    <!-- ================ -->
+                    <div id="header-top-second" class="clearfix">
+
+                        <!-- header top dropdowns start -->
+                        <!-- ================ -->
+                        <div id="userlr" class="header-top-dropdown">
+                            <div class="btn-group dropdown">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"
+                                        onclick="openLoginWindow()"><i class="fa fa-user" style="color: #0c91e5"></i>
+                                    Login
+                                </button>
+                            </div>
+                            <div class="btn-group dropdown">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"
+                                        onclick="openRegisterWindow()"><i class="fa fa-user" style="color: #0c91e5"></i>
+                                    register
+                                </button>
+                            </div>
+                        </div>
+                        <div id="userlr2" style="display:none;" class="header-top-dropdown">
+                            <div class="btn-group dropdown">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"
+                                        onclick="setOut()"><i class="fa fa-user" style="color: #0c91e5"></i> 退出
+                                </button>
+                            </div>
+                            <div id="login-window"></div>
+                            <div id="register-window"></div>
+                            <div id="authenticate-window"></div>
+
+                        </div>
+                        <!--							<script>kendo.bind($('#userlr'), viewModel);</script>
+                                                    <script>kendo.bind($('#login-window'), viewModel);</script>
+                                                    <script>kendo.bind($('#register-window'), viewModel);</script>-->
+                        <!--  header top dropdowns end -->
+
+                    </div>
+                    <!-- header-top-second end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- header-top end -->
+
+    <!-- header start (remove fixed class from header in order to disable fixed navigation mode) -->
+    <!-- ================ -->
+    <header class="header fixed clearfix">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <!-- header-left start -->
+                    <!-- ================ -->
+                    <div class="header-left clearfix">
+
+                        <!-- logo -->
+                        <div class="logo">
+                            <a href="index_driver.html"><img id="logo" src="${base.contextPath}/resources/images/logo_car.jpg"
+                                                      alt="Home"></a>
+                        </div>
+
+                    </div>
+                    <!-- header-left end -->
+
+                </div>
+                <div class="col-md-9">
+
+                    <!-- header-right start -->
+                    <!-- ================ -->
+                    <div class="header-right clearfix">
+
+                        <!-- main-navigation start -->
+                        <!-- ================ -->
+                        <div class="main-navigation animated">
+
+                            <!-- navbar start -->
+                            <!-- ================ -->
+                            <nav class="navbar navbar-default" role="navigation">
+                                <div class="container-fluid">
+
+                                    <!-- Toggle get grouped for better mobile display -->
+                                    <div class="navbar-header">
+                                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                                data-target="#navbar-collapse-1">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Collect the nav links, forms, and other content for toggling -->
+                                    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                                        <ul class="nav navbar-nav navbar-right">
+                                            <li class="dropdown active">
+                                                <a href="index_driver.html" class="dropdown-toggle"
+                                                   data-toggle="dropdown">首页</a>
+                                            </li>
+                                            <!-- mega-menu start -->
+                                            <li class="dropdown mega-menu">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pages</a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-3 hidden-sm">
+                                                                <h4>Premium HTML5 Template</h4>
+                                                                <p>iDea is perfectly suitable for corporate, business
+                                                                    and company webpages.</p>
+                                                                <img src="${base.contextPath}/resources/images/section-image-3.png"
+                                                                     alt="iDea">
+                                                            </div>
+                                                            <div class="col-lg-8 col-md-9">
+                                                                <h4>Pages</h4>
+                                                                <div class="row">
+                                                                    <div class="col-sm-4">
+                                                                        <div class="divider"></div>
+                                                                        <ul class="menu">
+                                                                            <li><a href="page-about.html"><i
+                                                                                    class="icon-right-open"></i>About Us</a>
+                                                                            </li>
+                                                                            <li><a href="page-about-2.html"><i
+                                                                                    class="icon-right-open"></i>About Us
+                                                                                2</a></li>
+                                                                            <li><a href="page-about-3.html"><i
+                                                                                    class="icon-right-open"></i>About Us
+                                                                                3</a></li>
+                                                                            <li><a href="page-about-me.html"><i
+                                                                                    class="icon-right-open"></i>About Me</a>
+                                                                            </li>
+                                                                            <li><a href="page-team.html"><i
+                                                                                    class="icon-right-open"></i>Our Team
+                                                                                - Options</a></li>
+                                                                            <li><a href="page-services.html"><i
+                                                                                    class="icon-right-open"></i>Services</a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div class="col-sm-4">
+                                                                        <div class="divider"></div>
+                                                                        <ul class="menu">
+                                                                            <li><a href="page-contact.html"><i
+                                                                                    class="icon-right-open"></i>Contact</a>
+                                                                            </li>
+                                                                            <li><a href="page-contact-2.html"><i
+                                                                                    class="icon-right-open"></i>Contact
+                                                                                2</a></li>
+                                                                            <li><a href="page-coming-soon.html"><i
+                                                                                    class="icon-right-open"></i>Coming
+                                                                                Soon Page</a></li>
+                                                                            <li><a href="page-404.html"><i
+                                                                                    class="icon-right-open"></i>404
+                                                                                error</a></li>
+                                                                            <li><a href="page-faq.html"><i
+                                                                                    class="icon-right-open"></i>FAQ page</a>
+                                                                            </li>
+                                                                            <li><a href="page-affix-sidebar.html"><i
+                                                                                    class="icon-right-open"></i>Sidebar
+                                                                                - Affix Menu</a></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div class="col-sm-4">
+                                                                        <div class="divider"></div>
+                                                                        <ul class="menu">
+                                                                            <li><a href="page-left-sidebar.html"><i
+                                                                                    class="icon-right-open"></i>Left
+                                                                                Sidebar</a></li>
+                                                                            <li><a href="page-right-sidebar.html"><i
+                                                                                    class="icon-right-open"></i>Right
+                                                                                Sidebar</a></li>
+                                                                            <li><a href="page-two-sidebars.html"><i
+                                                                                    class="icon-right-open"></i>Two
+                                                                                Sidebars</a></li>
+                                                                            <li><a href="page-no-sidebar.html"><i
+                                                                                    class="icon-right-open"></i>No
+                                                                                Sidebars</a></li>
+                                                                            <li><a href="page-sitemap.html"><i
+                                                                                    class="icon-right-open"></i>Sitemap</a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <!-- mega-menu end -->
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="features-typography.html">Typography</a></li>
+                                                    <li class="dropdown">
+                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pricing
+                                                            tables</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="features-pricing-tables-1.html">Pricing Tables
+                                                                1</a></li>
+                                                            <li><a href="features-pricing-tables-2.html">Pricing Tables
+                                                                2</a></li>
+                                                            <li><a href="features-pricing-tables-3.html">Pricing Tables
+                                                                3</a></li>
+                                                        </ul>
+                                                    </li>
+                                                    <li><a href="features-backgrounds.html">Backgrounds</a></li>
+                                                    <li><a href="features-testimonials.html">Testimonials</a></li>
+                                                    <li class="dropdown">
+                                                        <a href="#" class="dropdown-toggle"
+                                                           data-toggle="dropdown">Icons</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="features-icons-fontawesome.html">Font Awesome
+                                                                Icons</a></li>
+                                                            <li><a href="features-icons-fontello.html">Fontello
+                                                                Icons</a></li>
+                                                            <li><a href="features-icons-glyphicons.html">Glyphicons
+                                                                Icons</a></li>
+                                                        </ul>
+                                                    </li>
+                                                    <li class="dropdown">
+                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Footer
+                                                            - Options</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="features-footer-1.html#footer">Footer 1
+                                                                (Default)</a></li>
+                                                            <li><a href="features-footer-2.html#footer">Footer 2</a>
+                                                            </li>
+                                                            <li><a href="features-footer-3.html#footer">Footer 3</a>
+                                                            </li>
+                                                            <li><a href="features-footer-4.html#footer">Footer 4</a>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li class="dropdown">
+                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Header
+                                                            - Options</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="features-header-1.html">Header - Layout 1
+                                                                (Default)</a></li>
+                                                            <li><a href="features-header-2.html">Header - Layout 2</a>
+                                                            </li>
+                                                            <li><a href="features-header-3.html">Header - Layout 3</a>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li><a href="features-grid.html">Grid System</a></li>
+                                                </ul>
+                                            </li>
+                                            <!-- mega-menu start -->
+                                            <li class="dropdown mega-menu">
+                                                <a href="#" class="dropdown-toggle"
+                                                   data-toggle="dropdown">Components</a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <div class="row">
+                                                            <div class="col-sm-4 col-md-6">
+                                                                <h4>iDea - Powerful Bootstrap Theme</h4>
+                                                                <p>iDea is a Clean and Super Flexible Bootstrap Theme
+                                                                    with many Features and Unlimited options.</p>
+                                                                <img src="${base.contextPath}/resources/images/section-image-1.png"
+                                                                     alt="image-1">
+                                                            </div>
+                                                            <div class="col-sm-8 col-md-6">
+                                                                <h4>Components</h4>
+                                                                <div class="row">
+                                                                    <div class="col-sm-6">
+                                                                        <div class="divider"></div>
+                                                                        <ul class="menu">
+                                                                            <li>
+                                                                                <a href="components-tabs-and-pills.html"><i
+                                                                                        class="icon-right-open"></i>Tabs
+                                                                                    &amp; Pills</a></li>
+                                                                            <li><a href="components-accordions.html"><i
+                                                                                    class="icon-right-open"></i>Accordions</a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <a href="components-social-icons.html"><i
+                                                                                        class="icon-right-open"></i>Social
+                                                                                    Icons</a></li>
+                                                                            <li><a href="components-buttons.html"><i
+                                                                                    class="icon-right-open"></i>Buttons</a>
+                                                                            </li>
+                                                                            <li><a href="components-forms.html"><i
+                                                                                    class="icon-right-open"></i>Forms</a>
+                                                                            </li>
+                                                                            <li><a href="components-progress-bars.html"><i
+                                                                                    class="icon-right-open"></i>Progress
+                                                                                bars</a></li>
+                                                                            <li>
+                                                                                <a href="components-alerts-and-callouts.html"><i
+                                                                                        class="icon-right-open"></i>Alerts
+                                                                                    &amp; Callouts</a></li>
+                                                                            <li>
+                                                                                <a href="components-content-sliders.html"><i
+                                                                                        class="icon-right-open"></i>Content
+                                                                                    Sliders</a></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div class="col-sm-6">
+                                                                        <div class="divider"></div>
+                                                                        <ul class="menu">
+                                                                            <li><a href="components-lightbox.html"><i
+                                                                                    class="icon-right-open"></i>Lightbox</a>
+                                                                            </li>
+                                                                            <li><a href="components-icon-boxes.html"><i
+                                                                                    class="icon-right-open"></i>Icon
+                                                                                Boxes</a></li>
+                                                                            <li><a href="components-image-boxes.html"><i
+                                                                                    class="icon-right-open"></i>Image
+                                                                                Boxes</a></li>
+                                                                            <li>
+                                                                                <a href="components-video-and-audio.html"><i
+                                                                                        class="icon-right-open"></i>Video
+                                                                                    &amp; Audio</a></li>
+                                                                            <li><a href="components-modals.html"><i
+                                                                                    class="icon-right-open"></i>Modals</a>
+                                                                            </li>
+                                                                            <li><a href="components-animations.html"><i
+                                                                                    class="icon-right-open"></i>Animations</a>
+                                                                            </li>
+                                                                            <li><a href="components-counters.html"><i
+                                                                                    class="icon-right-open"></i>Counters</a>
+                                                                            </li>
+                                                                            <li><a href="components-tables.html"><i
+                                                                                    class="icon-right-open"></i>Tables</a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <!-- mega-menu end -->
+                                            <li class="dropdown">
+                                                <a href="portfolio-3col.html" class="dropdown-toggle"
+                                                   data-toggle="dropdown">Portfolio</a>
+                                                <ul class="dropdown-menu">
+                                                    <li class="dropdown">
+                                                        <a href="portfolio-3col.html" class="dropdown-toggle"
+                                                           data-toggle="dropdown">Portfolio - Style 1</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="portfolio-2col.html">Portfolio - 2 columns</a>
+                                                            </li>
+                                                            <li><a href="portfolio-3col.html">Portfolio - 3 columns</a>
+                                                            </li>
+                                                            <li><a href="portfolio-4col.html">Portfolio - 4 columns</a>
+                                                            </li>
+                                                            <li><a href="portfolio-sidebar.html">Portfolio - With
+                                                                sidebar</a></li>
+                                                        </ul>
+                                                    </li>
+                                                    <li class="dropdown">
+                                                        <a href="portfolio-3col-2.html" class="dropdown-toggle"
+                                                           data-toggle="dropdown">Portfolio - Style 2</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="portfolio-2col-2.html">Portfolio - 2
+                                                                columns</a></li>
+                                                            <li><a href="portfolio-3col-2.html">Portfolio - 3
+                                                                columns</a></li>
+                                                            <li><a href="portfolio-4col-2.html">Portfolio - 4
+                                                                columns</a></li>
+                                                            <li><a href="portfolio-sidebar-2.html">Portfolio - With
+                                                                sidebar</a></li>
+                                                        </ul>
+                                                    </li>
+                                                    <li class="dropdown">
+                                                        <a href="portfolio-3col-3.html" class="dropdown-toggle"
+                                                           data-toggle="dropdown">Portfolio - Style 3</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="portfolio-2col-3.html">Portfolio - 2
+                                                                columns</a></li>
+                                                            <li><a href="portfolio-3col-3.html">Portfolio - 3
+                                                                columns</a></li>
+                                                            <li><a href="portfolio-4col-3.html">Portfolio - 4
+                                                                columns</a></li>
+                                                            <li><a href="portfolio-sidebar-3.html">Portfolio - With
+                                                                sidebar</a></li>
+                                                        </ul>
+                                                    </li>
+                                                    <li><a href="portfolio-full.html">Portfolio - Full width</a></li>
+                                                    <li><a href="portfolio-item.html">Portfolio single</a></li>
+                                                    <li><a href="portfolio-item-2.html">Portfolio single 2</a></li>
+                                                    <li><a href="portfolio-item-3.html">Portfolio single 3</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown">
+                                                <a href="shop-listing-3col.html" class="dropdown-toggle"
+                                                   data-toggle="dropdown">Shop</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="shop-listing-3col.html">Shop - 3 Columns</a></li>
+                                                    <li><a href="shop-listing-4col.html">Shop - 4 Columns</a></li>
+                                                    <li><a href="shop-listing-sidebar.html">Shop - With Sidebar</a></li>
+                                                    <li><a href="shop-product.html">Product</a></li>
+                                                    <li><a href="shop-cart.html">Shopping Cart</a></li>
+                                                    <li><a href="shop-checkout.html">Checkout Page - Step 1</a></li>
+                                                    <li><a href="shop-checkout-payment.html">Checkout Page - Step 2</a>
+                                                    </li>
+                                                    <li><a href="shop-checkout-review.html">Checkout Page - Step 3</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown">
+                                                <a href="blog-right-sidebar.html" class="dropdown-toggle"
+                                                   data-toggle="dropdown">Blog</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="blog-right-sidebar.html">Blog Right Sidebar</a></li>
+                                                    <li><a href="blog-left-sidebar.html">Blog Left Sidebar</a></li>
+                                                    <li><a href="blog-no-sidebar.html">Blog No Sidebars</a></li>
+                                                    <li><a href="blog-masonry.html">Blog Masonry</a></li>
+                                                    <li><a href="blog-masonry-sidebar.html">Blog Masonry - Sidebar</a>
+                                                    </li>
+                                                    <li><a href="blog-timeline.html">Blog Timeline</a></li>
+                                                    <li><a href="blog-post.html">Blog post</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </nav>
+                            <!-- navbar end -->
+
+                        </div>
+                        <!-- main-navigation end -->
+
+                    </div>
+                    <!-- header-right end -->
+
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- header end -->
+
+    <!-- banner start -->
+    <!-- ================ -->
+    <div class="banner">
+
+        <!-- slideshow start -->
+        <!-- ================ -->
+        <div class="slideshow">
+
+            <!-- slider revolution start -->
+            <!-- ================ -->
+            <div class="slider-banner-container">
+                <div class="slider-banner">
+                    <ul>
+                        <!-- slide 1 start -->
+                        <li data-transition="random" data-slotamount="7" data-masterspeed="500"
+                            data-saveperformance="on" data-title="风雨九州，有你必行">
+
+                            <!-- main image -->
+                            <img src="${base.contextPath}/resources/images/slider-index-1.jpg" alt="slidebg1"
+                                 data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
+
+                            <!-- LAYER NR. 1 -->
+                            <div class="tp-caption default_bg large sfr tp-resizeme"
+                                 data-x="0"
+                                 data-y="70"
+                                 data-speed="600"
+                                 data-start="1200"
+                                 data-end="9400"
+                                 data-endspeed="600">风雨九州，有你必行
+                            </div>
+
+                            <!-- LAYER NR. 2 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="170"
+                                 data-speed="600"
+                                 data-start="1600"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 3 -->
+                            <div class="tp-caption light_gray_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="170"
+                                 data-speed="600"
+                                 data-start="1600"
+                                 data-end="9400"
+                                 data-endspeed="600">更及时
+                            </div>
+
+                            <!-- LAYER NR. 4 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="220"
+                                 data-speed="600"
+                                 data-start="1800"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 5 -->
+                            <div class="tp-caption light_gray_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="220"
+                                 data-speed="600"
+                                 data-start="1800"
+                                 data-end="9400"
+                                 data-endspeed="600">更放心
+                            </div>
+
+                            <!-- LAYER NR. 6 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="270"
+                                 data-speed="600"
+                                 data-start="2000"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 7 -->
+                            <div class="tp-caption light_gray_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="270"
+                                 data-speed="600"
+                                 data-start="2000"
+                                 data-end="9400"
+                                 data-endspeed="600">更安全
+                            </div>
+
+                            <!-- LAYER NR. 8 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="320"
+                                 data-speed="600"
+                                 data-start="2200"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 9 -->
+                            <div class="tp-caption light_gray_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="320"
+                                 data-speed="600"
+                                 data-start="2200"
+                                 data-end="9400"
+                                 data-endspeed="600">做的更好
+                            </div>
+
+                            <!-- LAYER NR. 9 -->
+                            <div class="tp-caption dark_gray_bg sfb medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="370"
+                                 data-speed="600"
+                                 data-start="2400"
+                                 data-end="9400"
+                                 data-endspeed="600">123
+                            </div>
+
+
+                        </li>
+                        <!-- slide 1 end -->
+
+                        <!-- slide 2 start -->
+                        <li data-transition="random" data-slotamount="7" data-masterspeed="500"
+                            data-saveperformance="on" data-title="Powerful Bootstrap Theme">
+
+                            <!-- main image -->
+                            <img src="${base.contextPath}/resources/images/slider-index-2.jpg" alt="slidebg1"
+                                 data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
+
+                            <!-- LAYER NR. 1 -->
+                            <div class="tp-caption white_bg large sfr tp-resizeme"
+                                 data-x="0"
+                                 data-y="70"
+                                 data-speed="600"
+                                 data-start="1200"
+                                 data-end="9400"
+                                 data-endspeed="600">因爱而快
+                            </div>
+
+                            <!-- LAYER NR. 2 -->
+                            <div class="tp-caption default_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="170"
+                                 data-speed="600"
+                                 data-start="1600"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 3 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="170"
+                                 data-speed="600"
+                                 data-start="1600"
+                                 data-end="9400"
+                                 data-endspeed="600">123
+                            </div>
+
+                            <!-- LAYER NR. 4 -->
+                            <div class="tp-caption default_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="220"
+                                 data-speed="600"
+                                 data-start="1800"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 5 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="220"
+                                 data-speed="600"
+                                 data-start="1800"
+                                 data-end="9400"
+                                 data-endspeed="600">456
+                            </div>
+
+                            <!-- LAYER NR. 6 -->
+                            <div class="tp-caption default_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="270"
+                                 data-speed="600"
+                                 data-start="2000"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 7 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="270"
+                                 data-speed="600"
+                                 data-start="2000"
+                                 data-end="9400"
+                                 data-endspeed="600">789
+                            </div>
+
+                            <!-- LAYER NR. 8 -->
+                            <div class="tp-caption default_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="320"
+                                 data-speed="600"
+                                 data-start="2200"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 9 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="320"
+                                 data-speed="600"
+                                 data-start="2200"
+                                 data-end="9400"
+                                 data-endspeed="600">101112
+                            </div>
+
+                            <!-- LAYER NR. 10 -->
+                            <div class="tp-caption default_bg sfb medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="370"
+                                 data-speed="600"
+                                 data-start="2400"
+                                 data-end="9400"
+                                 data-endspeed="600">And Much More...
+                            </div>
+
+
+                        </li>
+                        <!-- slide 2 end -->
+
+                        <!-- slide 3 start -->
+                        <li data-transition="random" data-slotamount="7" data-masterspeed="500"
+                            data-saveperformance="on" data-title="Powerful Bootstrap Theme">
+
+                            <!-- main image -->
+                            <img src="${base.contextPath}/resources/images/slider-index-3.jpg" alt="kenburns"
+                                 data-bgposition="left center" data-kenburns="on" data-duration="10000"
+                                 data-ease="Linear.easeNone" data-bgfit="100" data-bgfitend="115"
+                                 data-bgpositionend="right center">
+
+                            <!-- LAYER NR. 1 -->
+                            <div class="tp-caption white_bg large sfr tp-resizeme"
+                                 data-x="0"
+                                 data-y="70"
+                                 data-speed="600"
+                                 data-start="1200"
+                                 data-end="9400"
+                                 data-endspeed="600"> 物流九洲，&amp;冠绝天下
+                            </div>
+
+                            <!-- LAYER NR. 2 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="170"
+                                 data-speed="600"
+                                 data-start="1600"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 3 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="170"
+                                 data-speed="600"
+                                 data-start="1600"
+                                 data-end="9400"
+                                 data-endspeed="600">123
+                            </div>
+
+                            <!-- LAYER NR. 4 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="220"
+                                 data-speed="600"
+                                 data-start="1800"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 5 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="220"
+                                 data-speed="600"
+                                 data-start="1800"
+                                 data-end="9400"
+                                 data-endspeed="600">456
+                            </div>
+
+                            <!-- LAYER NR. 6 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="270"
+                                 data-speed="600"
+                                 data-start="2000"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 7 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="270"
+                                 data-speed="600"
+                                 data-start="2000"
+                                 data-end="9400"
+                                 data-endspeed="600">789
+                            </div>
+
+                            <!-- LAYER NR. 8 -->
+                            <div class="tp-caption dark_gray_bg sfl medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="320"
+                                 data-speed="600"
+                                 data-start="2200"
+                                 data-end="9400"
+                                 data-endspeed="600"><i class="icon-check"></i>
+                            </div>
+
+                            <!-- LAYER NR. 9 -->
+                            <div class="tp-caption white_bg sfb medium tp-resizeme"
+                                 data-x="50"
+                                 data-y="320"
+                                 data-speed="600"
+                                 data-start="2200"
+                                 data-end="9400"
+                                 data-endspeed="600">101112
+                            </div>
+
+                            <!-- LAYER NR. 10 -->
+                            <div class="tp-caption dark_gray_bg sfb medium tp-resizeme"
+                                 data-x="0"
+                                 data-y="370"
+                                 data-speed="600"
+                                 data-start="2400"
+                                 data-end="9400"
+                                 data-endspeed="600">Don't miss out!
+                            </div>
+
+
+                        </li>
+                        <!-- slide 3 end -->
+
+                    </ul>
+                    <div class="tp-bannertimer tp-bottom"></div>
+                </div>
+            </div>
+            <!-- slider revolution end -->
+
+        </div>
+        <!-- slideshow end -->
+
+    </div>
+    <!-- banner end -->
+
+    <!-- page-top start-->
+    <!-- ================ -->
+    <div class="row">
+        <div  id="realNameAuthentication" class="col-md-12" style="text-align: center;">
+					<span id="authentication" class="btn btn-primary k-grid-add"
+                          onclick="openAuthenticateWindow()">司机实名认证</span>
+        </div>
+    </div>
+
+
+    <!-- footer start (Add "light" class to #footer in order to enable light footer) -->
+    <!-- ================ -->
+    <footer id="footer" style="margin-top:5rem;">
+
+        <!-- .subfooter start -->
+        <!-- ================ -->
+        <div class="subfooter">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>Copyright &copy; 2018.Auto freight management system <a href="#"
+                                                                                   title="汽车货运管理系统">汽车货运管理系统</a> -
+                            create by cjj</p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav class="navbar navbar-default" role="navigation">
+                            <!-- Toggle get grouped for better mobile display -->
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                        data-target="#navbar-collapse-2">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                            </div>
+                            <div class="collapse navbar-collapse" id="navbar-collapse-2">
+                                <ul class="nav navbar-nav">
+                                    <li><a href="index_driver.html">Home</a></li>
+                                    <li><a href="page-about.html">About</a></li>
+                                    <li><a href="blog-right-sidebar.html">Blog</a></li>
+                                    <li><a href="portfolio-3col.html">Portfolio</a></li>
+                                    <li><a href="page-contact.html">Contact</a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- .subfooter end -->
+
+    </footer>
+    <!-- footer end -->
+
+</div>
+<!-- page-wrapper end -->
+
+<!-- JavaScript files placed at the end of the document so the pages load faster
+================================================== -->
+<!-- Jquery and Bootstap core js files -->
+<script type="text/javascript" src="${base.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Modernizr javascript -->
+<script type="text/javascript" src="${base.contextPath}/resources/plugins/modernizr.js"></script>
+
+<!-- jQuery REVOLUTION Slider  -->
+<script type="text/javascript"
+        src="${base.contextPath}/resources/plugins/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
+<script type="text/javascript"
+        src="${base.contextPath}/resources/plugins/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
+
+<!-- Isotope javascript -->
+<script type="text/javascript" src="${base.contextPath}/resources/plugins/isotope/isotope.pkgd.min.js"></script>
+
+<!-- Owl carousel javascript -->
+<script type="text/javascript" src="${base.contextPath}/resources/plugins/owl-carousel/owl.carousel.js"></script>
+
+<!-- Magnific Popup javascript -->
+<script type="text/javascript"
+        src="${base.contextPath}/resources/plugins/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+<!-- Count To javascript -->
+<script type="text/javascript" src="${base.contextPath}/resources/plugins/jquery.countTo.js"></script>
+
+<!-- Parallax javascript -->
+<script src="${base.contextPath}/resources/plugins/jquery.parallax-1.1.3.js"></script>
+
+<!-- Contact form -->
+<script src="${base.contextPath}/resources/plugins/jquery.validate.js"></script>
+
+<!-- Initialization of Plugins -->
+<script type="text/javascript" src="${base.contextPath}/resources/js/template.js"></script>
+
+<!-- Custom Scripts -->
+<script type="text/javascript" src="${base.contextPath}/resources/js/custom.js"></script>
+
+</body>
+</html>

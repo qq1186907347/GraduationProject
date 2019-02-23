@@ -5,51 +5,22 @@
 <body>
 <div id="page-content">
     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="selectItem()">选择</span>
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:create"><@spring.message "hap.new"/></span>
         <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
         <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "DriverCar.carType"/>'
+                   data-bind="value:model.carType" class="k-textbox">
+        <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
     <div style="clear:both">
         <div id="grid"></div>
     </div>
 </div>
-<script>
-    function selectItem() {
-        var addressType =window.parent.$('#addressType').val();;
-        console.log(addressType);
-        var addressValue;
-        var sum=0;
-        var address=$("#grid").data("kendoGrid").selectedDataItems();
-        for(var i in address){
-            addressValue=address[i].province+address[i].city+address[i].town+address[i].addressDetail;
-            sum++;
-        }
-        if(sum==0){
-            kendo.ui.showInfoDialog({
-                message:"请选择地址！"
-            });
-        }else if(sum>1){
-            kendo.ui.showInfoDialog({
-                message:"只能选择一个地址！"
-            });
-        }
-        else{
-            //赋值
-            if(addressType=='start'){
-                window.parent.$("#startAddress").val(addressValue);
-                window.parent.viewModel.model.set('startAddress',addressValue);
-                window.parent.$("#address-Window").data("kendoWindow").close();
-            }else {
-                window.parent.$("#endAddress").val(addressValue);
-                window.parent.viewModel.model.set('endAddress',addressValue);
-                window.parent.$("#address-Window").data("kendoWindow").close();
-            }
-        }
-
-    }
-
-</script>
 
 <script type="text/javascript">
     Hap.initEnterQuery('#query-form', viewModel.query);
@@ -57,22 +28,22 @@
     dataSource = new kendo.data.DataSource({
         transport: {
             read: {
-                url: BaseUrl + "/address/query",
+                url: BaseUrl + "/driver/car/query",
                 type: "POST",
                 dataType: "json"
             },
             update: {
-                url: BaseUrl + "/address/submit",
+                url: BaseUrl + "/driver/car/submit",
                 type: "POST",
                 contentType: "application/json"
             },
             destroy: {
-                url: BaseUrl + "/address/remove",
+                url: BaseUrl + "/driver/car/remove",
                 type: "POST",
                 contentType: "application/json"
             },
             create: {
-                url: BaseUrl + "/address/submit",
+                url: BaseUrl + "/driver/car/submit",
                 type: "POST",
                 contentType: "application/json"
             },
@@ -92,7 +63,7 @@
             data: 'rows',
             total: 'total',
             model: {
-                id: "addressId",
+                id: "carId",
                 fields: {}
             }
         }
@@ -115,28 +86,53 @@
             buttonCount: 5
         },
         columns: [
-                    {
-                field: "province",
-                title: '省份',
-                width: 50
+            {
+                field: "carId",
+                title: '<@spring.message "drivercar.carid"/>',
+                width: 120
             },
                     {
-                field: "city",
-                title: '地级市',
-                width: 50
+                field: "carType",
+                title: '<@spring.message "drivercar.cartype"/>',
+                width: 120
             },
                     {
-                field: "town",
-                title: '市、县级市、县',
-                width: 50
+                field: "plateNumber",
+                title: '<@spring.message "drivercar.plate number"/>',
+                width: 120
             },
                     {
-                field: "addressDetail",
-                title: '详细地址',
+                field: "carLong",
+                title: '<@spring.message "drivercar.carlong"/>',
+                width: 120
+            },
+                    {
+                field: "carHeight",
+                title: '<@spring.message "drivercar.carheight"/>',
+                width: 120
+            },
+                    {
+                field: "carWide",
+                title: '<@spring.message "drivercar.carwide"/>',
+                width: 120
+            },
+                    {
+                field: "carAge",
+                title: '<@spring.message "drivercar.carage"/>',
+                width: 120
+            },
+                    {
+                field: "carTonnage",
+                title: '<@spring.message "drivercar.cartonnage"/>',
+                width: 120
+            },
+                    {
+                field: "driverId",
+                title: '<@spring.message "drivercar.driverid"/>',
                 width: 120
             },
         ],
-        editable: false
+        editable: true
     });
 
 </script>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.DriverMessageMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.DriverMessage">
+        <result column="message_id" property="messageId" jdbcType="DECIMAL" />
+        <result column="real_name" property="realName" jdbcType="VARCHAR" />
+        <result column="gender" property="gender" jdbcType="VARCHAR" />
+        <result column="nation" property="nation" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+        <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+        <result column="contact_name" property="contactName" jdbcType="VARCHAR" />
+        <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="relation" property="relation" jdbcType="VARCHAR" />
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL" />
+        <result column="message_status" property="messageStatus" jdbcType="DECIMAL" />
+    </resultMap>
+
+
+<insert id="addMessage">
+    INSERT  INTO driver_message (real_name, gender, nation,address,birthday,id_card, contact_name, contact_phone, relation, driver_id,phone)
+    VALUES (#{realName}, #{gender},#{nation},#{address},#{birthday},#{idCard},#{contactName},#{contactPhone},#{relation},#{driverId},#{phone})
+</insert>
+
+<select id="selectPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+        SELECT * from
+        driver_message
+        where
+        message_status = #{messageStatus,jdbcType=VARCHAR}
+</select>
+
+<select id="selectUnPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+        SELECT * from
+        driver_message
+        where
+        message_status = #{messageStatus,jdbcType=VARCHAR}
+</select>
+
+<select id="isAuthenticated" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+        SELECT * from
+        driver_message
+        where
+        message_status = #{messageStatus,jdbcType=VARCHAR}
+        and
+        driver_id = #{driverId,jdbcType=DECIMAL}
+</select>
+
+<update id="setMessageStatus" parameterType="graduation.dto.DriverMessage">
+        UPDATE driver_message
+        <set>
+        message_status = #{messageStatus,jdbcType=VARCHAR}
+        </set>
+        WHERE message_id = #{messageId,jdbcType=DECIMAL}
+    </update>
+
+</mapper>

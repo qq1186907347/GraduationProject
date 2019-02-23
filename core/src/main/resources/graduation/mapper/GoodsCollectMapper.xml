@@ -26,6 +26,12 @@
             <if test="collectId!= null">
                 and gc.collect_id = #{collectId,jdbcType=DECIMAL}
             </if>
+            <if test="collectName != null">
+                and gc.collect_name LIKE concat(concat("%", #{collectName,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="collectType != null">
+                and gc.collect_type LIKE concat(concat("%", #{collectType,jdbcType=VARCHAR}), "%")
+            </if>
         </where>
 </select>
 

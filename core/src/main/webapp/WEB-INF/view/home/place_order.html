@@ -1,12 +1,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="X-CSRF-TOKEN" />
     <link href="${base.contextPath}/resources/upload/favicon.png?v=${Session.sysFaviconVersion!}" rel="shortcut icon"/>
     <!--[if IE 8]>
     <script src="${base.contextPath}/lib/polyfill/respond.min.js"></script>
     <script src="${base.contextPath}/lib/polyfill/es5-shim.min.js"></script>
     <![endif]-->
+    <script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/jquery.min.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/kendo.all.min.js?v=20181015"></script>
     <script src="${base.contextPath}/lib/kendoui/js/jszip.min.js"></script>
@@ -26,7 +30,6 @@
     <script src="${base.contextPath}/lib/assets/global/plugins/jquery.blockui.min.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/jquery.placeholder.js"></script>
     <style>
-        input::-ms-clear{display:none;}
         .my-placeholder { color: #aaa; }
     </style>
     <script>
@@ -110,7 +113,8 @@
     function placeOrder(){
         if(checkFrom()){
             loadData();
-            console.log("place_order");
+            $("#useCar").attr('style', 'display:none');
+            $("#confirmOrder").removeAttr("style");
         }
     }
     //表单校验
@@ -126,6 +130,40 @@
             console.log("false");
             return false;
         }
+    }
+
+    //确认下订单
+    function confirmOrder(){
+        $.ajax({
+            url: '${base.contextPath}/user/order/add',
+            type: 'POST',
+            dataType: "json",
+            data:JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if(result.success){
+                    kendo.ui.showInfoDialog({
+                        title: $l('hap.tip.info'),
+                        message: "下单成功，可以在订单管理查看订单状态",
+                        buttons: [{
+                            text: kendo.ui.Widget.prototype.options.messages['ok'],
+                            type: 'primary',
+                            click: function (e) {
+                                window.parent.$("#placeOrder-window").data("kendoWindow").close();
+                                e.dialog.destroy();
+                                e.deferred.resolve({ button: 'OK' });
+                            }
+                        }],
+                    });
+                } else {
+                    kendo.ui.showErrorDialog({
+                        title: $l('hap.error'),
+                        message : result.message
+                    });
+                }
+            }
+        });
+
     }
 
 </script>
@@ -166,7 +204,7 @@
             <input type="hidden" id="addressType">
             <div class="col-md-12 line-style">
                 <i class="fa fa-tree" style="color: green"></i>
-                <input id="startAddress" name="起点" required onclick="openAddressWindow1()"
+                <input readonly="readonly" id="startAddress" name="起点" required onclick="openAddressWindow1()"
                  placeholder="单击选择起点地址"
                  type="text" class="font-input k-textbox k-valid"
                  data-bind="value:model.userName">
@@ -176,7 +214,7 @@
             <div class="col-md-12"><p>-</p></div>
             <div class="col-md-12 line-style">
                 <i class="fa fa-tree" style="color:darkred"></i>
-                <input id="endAddress" required name="目的地"  onclick="openAddressWindow2()"
+                <input readonly="readonly"  id="endAddress" required name="目的地"  onclick="openAddressWindow2()"
                        placeholder="单击选择目的地地址" type="text"
                        class="font-input k-textbox"
                         data-bind="value:model.endAddress">
@@ -186,28 +224,25 @@
             <div id="address-Window"></div>
 
             <div class="col-md-12 line-style">货物
-                <input  id="goods" required onclick="openGoodsWindow()"
+                <input readonly="readonly"    id="goods" required onclick="openGoodsWindow()"
                        name="货物" placeholder="单击选择货物" type="text"
                        class="font-input k-textbox"
                        data-bind="value:model.goods">
                 <div id="goods-window"></div>
             </div>
             <div class="col-md-12 line-style">卡车类型
-                <input  id="carId" required
-                        name="卡车类型" type="hidden">
-                <input  id="carType" required
+                <input readonly="readonly"  id="carType" required
                        name="卡车类型" placeholder="单击选择卡车类型" type="text"
                        class="font-input k-textbox"
-                        onclick="openCarTypeWindow()"
-                       data-bind="value:model.carType">
+                        onclick="openCarTypeWindow()">
             </div>
             <div id="carType-Window"></div>
             <div class="col-md-12 line-style">备注</div>
             <div class="col-md-12 line-style">
-                <textarea placeholder="备注" style="width: 100%;height: 30rem"></textarea>
+                <textarea  id="orderRemake" placeholder="备注" style="width: 100%;height: 30rem"></textarea>
 
             </div>
-            <script>kendo.bind($('#endAddress'), viewModel);</script>
+            <script>kendo.bind($('#orderRemake'), viewModel);</script>
         </div>
     </div>
     <div class="col-md-4">
@@ -232,8 +267,8 @@
         <script>kendo.bind($('#contactPhone'), viewModel);</script>
         <div class="col-md-12 line-style" style="text-align: center;color:#999693 ">高速、停车费用与司机协商</div>
         <div class="col-md-12 line-style">
-            <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="placeOrder()">现在用车</span>
-            <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;">预约</span>
+            <div id="useCar"><span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="placeOrder()">现在用车</span></div>
+            <div id="confirmOrder" style="display:none"><span class="btn btn-success k-grid-save-changes"  onclick="confirmOrder()" style="float:left;margin-right:5px;">确认下单</span></div>
         </div>
 
         <div class="col-md-4 line-style"  style="text-align: left;color:#999693;">总路程</div>
@@ -254,10 +289,8 @@
         <div class="col-md-5 line-style"  style="text-align: left;color:#999693;">价格</div>
         <div class="col-md-5 line-style" style="text-align: right;color:#999693;">
             <span>＄</span><input  readonly="readonly" id="price" type="text" style="border-bottom-width: 0rem; "
-                                  class=" k-textbox concact-input"
-                                  data-bind="value:model.price">
+                                  class=" k-textbox concact-input">
         </div>
-        <script>kendo.bind($('#price'), viewModel);</script>
     </div>
 
     </div>
@@ -311,6 +344,7 @@
             //获得价钱
             var temp=plan.getDistance(true);
             var totalPrice=getTotalPrice(temp.substring(0,temp.length-2));
+            viewModel.model.set('orderPrice',totalPrice);
             $('#price').val(totalPrice);
             console.log("总距离："+temp.substring(0,temp.length-2));
 
@@ -352,5 +386,7 @@
 <input id="startPrice" type="hidden">
 <input id="startDistance" type="hidden">
 <input id="addPrice" type="hidden">
+<input  id="carId"  type="hidden">
+<input  id="collectId"  type="hidden">
 </body>
 </html>

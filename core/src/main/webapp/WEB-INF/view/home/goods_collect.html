@@ -1,61 +1,50 @@
 <#include "../include/header.html">
 <script type="text/javascript">
     var viewModel = Hap.createGridViewModel("#grid");
+
+    //货物新建
+    function newCollectsWindow() {
+        var url = "${base.contextPath}/home/new_goods.html";
+        Hap.createWindow('#new-window', {
+            width: '95%',
+            height: '95%',
+            title: '新建货物',
+            url: url
+        }).center().open();
+    }
+    //货物详情
+    function openDetailWindow(collectId) {
+        var url = "${base.contextPath}/home/goods_detail.html?collectId="+collectId;
+        Hap.createWindow('#detail-window', {
+            width: '95%',
+            height: '95%',
+            title: '货物详情',
+            url: url
+        }).center().open();
+    }
 </script>
 <body>
 <div id="page-content">
     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="selectItem()">选择</span>
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="newCollectsWindow()"><@spring.message "hap.new"/></span>
+        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='货物名称'
+                   data-bind="value:model.collectName" class="k-textbox">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='货物类别'
+                   data-bind="value:model.collectType" class="k-textbox">
+        <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
     <div style="clear:both">
         <div id="grid"></div>
-        <div id="goods-window"></div>
+        <div id="new-window"></div>
+        <div id="detail-window"></div>
     </div>
 </div>
-<script>
-    function selectItem() {
-        var goodsName;
-        var collectId;
-        var sum=0;
-        var goodsCollect=$("#grid").data("kendoGrid").selectedDataItems();
-        for(var i in goodsCollect){
-            goodsName=goodsCollect[i].collectName;
-            collectId=goodsCollect[i].collectId;
-            sum++;
-        }
-        if(sum==0){
-            kendo.ui.showInfoDialog({
-                message:"请选择货物！"
-            });
-        }else if(sum>1){
-            kendo.ui.showInfoDialog({
-                message:"只能选择一个货物！"
-            });
-        }
-        else{
-            //赋值
-            window.parent.$("#goods").val(goodsName);
-            window.parent.viewModel.model.set('collectId',collectId);
-            window.parent.$("#goods-window").data("kendoWindow").close();
-
-        }
-
-    }
-
-   function openGoodsDetailWindow(collectId){
-       var url = "${base.contextPath}/home/goods_detail.html";
-       if (collectId) {
-           url = url + "?collectId=" + collectId;
-       }
-       Hap.createWindow('#goods-window',{
-           width: '98%',
-           height: '98%',
-           title: '货物详情',
-           url: url
-       }).center().open();
-   }
-</script>
 
 <script type="text/javascript">
     Hap.initEnterQuery('#query-form', viewModel.query);
@@ -126,13 +115,13 @@
                 title: '货物名称',
                 width: 120
             },
-               {
+                    {
                 field: "collectType",
-                title: '货物类型',
+                title: '货物类别',
                 width: 120
             },
             {
-                title:'详情',
+                title:'货物详情',
                 width : 90,
                 headerAttributes: {
                     style : "text-align: center"
@@ -142,15 +131,15 @@
                     console.log(1);
                     if (rowdata.collectId) {
                         //把数据都转化成字符串
-                        var myString="openGoodsDetailWindow('"+rowdata.collectId+"')";
+                        var myString="openDetailWindow('"+rowdata.collectId+"')";
                         //console.log(myString);
-                        return '<a href="#" onclick='+myString+'> 详情</a>'
+                        return '<a href="#" onclick='+myString+'> 货物详情</a>'
                     } else return ''
                 },
                 sortable: false
             },
         ],
-        editable: false
+        editable: true
     });
 
 </script>
