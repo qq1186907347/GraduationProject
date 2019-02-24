@@ -11,7 +11,7 @@
             url: url
         }).center().open();
     }
-    //司机详情d
+    //司机详情
     function openDriverWindow(driverId) {
         var url = "${base.contextPath}/driver/driver_detail.html?driverId="+driverId;
         Hap.createWindow('#goodsDetail-window', {
@@ -22,6 +22,47 @@
         }).center().open();
     }
 
+    
+    //校验订单是否已经评价了
+    function openEvaluateindow(userId,orderId,driverId) {
+        viewModel.model.set('userId',userId);
+        viewModel.model.set('orderId',orderId);
+        viewModel.model.set('driverId',driverId);
+        viewModel.model.set('evaluateType',0);
+        var sucess=false;
+        $.ajax({
+            url: '${base.contextPath}/evaluate/isFinish',
+            type: 'POST',
+            dataType: "json",
+            data:JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                console.log(result.success);
+                if(result.success){
+                    //评价窗口
+                    var url = "${base.contextPath}/order/evaluate_user.html?driverId="+driverId+"&userId="+userId+"&orderId="+orderId;
+                    Hap.createWindow('#addEvaluate-window', {
+                        width: '70%',
+                        height: '70%',
+                        title: '评价',
+                        url: url
+                    }).center().open();
+
+                } else {
+                    //评价窗口
+                    var url = "${base.contextPath}/order/evaluate_detail_user.html?driverId="+driverId+"&userId="+userId+"&orderId="+orderId;
+                    Hap.createWindow('#addEvaluate-window', {
+                        width: '70%',
+                        height: '70%',
+                        title: '我的评价',
+                        url: url
+                    }).center().open();
+                }
+            }
+        });
+        return sucess;
+    }
+
     function orderFinish(orderId) {
         kendo.ui.showConfirmDialog({
         title: $l('hap.tip.info'),
@@ -30,7 +71,7 @@
         if (event.button == 'OK') {
             viewModel.model.set("orderId",orderId);
             $.ajax({
-                url: '${base.contextPath}/user/order/setFinish',
+                url: '${base.contextPath}/user/order/finish',
                 type: 'POST',
                 dataType: "json",
                 data:JSON.stringify(viewModel.model),
@@ -40,15 +81,6 @@
                         kendo.ui.showInfoDialog({
                             title: $l('hap.tip.info'),
                             message: '操作成功',
-                            buttons: [{
-                                text: kendo.ui.Widget.prototype.options.messages['ok'],
-                                type: 'primary',
-                                click: function (e) {
-                                    window.viewModel.refresh();
-                                    e.dialog.destroy();
-                                    e.deferred.resolve({ button: 'OK' });
-                                }
-                            }],
                         });
                     } else {
                         kendo.ui.showErrorDialog({
@@ -65,6 +97,12 @@
 </script>
 <body>
 <div id="page-content">
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:create"><@spring.message "hap.new"/></span>
+        <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
+        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
             <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "UserOrder.contactName"/>'
                    data-bind="value:model.contactName" class="k-textbox">
@@ -75,6 +113,8 @@
     <div style="clear:both">
         <div id="grid"></div>
         <div id="goodsDetail-window"></div>
+        <div id="addEvaluate-window"></div>
+        <div id="evaluateDetail-window"></div>
     </div>
 </div>
 
@@ -84,7 +124,7 @@
     dataSource = new kendo.data.DataSource({
         transport: {
             read: {
-                url: BaseUrl + "/user/order/query",
+                url: BaseUrl + "/user/order/query/finish",
                 type: "POST",
                 dataType: "json"
             },
@@ -213,24 +253,23 @@
                 width: 120
             },
             {
-                title:'操作',
-                width : 200,
+                title:'评价',
+                width : 90,
                 headerAttributes: {
                     style : "text-align: center"
                 },
                 attributes: {style: "text-align:center"},
                 template : function (rowdata) {
-                    if (rowdata.driverId) {
+                    if (rowdata.orderId) {
                         //把数据都转化成字符串
-                        var myString="orderFinish('"+rowdata.orderId+"')";
-                        //console.log(myString);
-                        return '<button   onclick='+myString+'> 确认收货</button>/ <button onclick='+myString+'> 拒绝付款</button>'
+                        var myString="openEvaluateindow('"+rowdata.userId+"','"+rowdata.orderId+"','"+rowdata.driverId+"')";
+                        return '<a href="#" onclick='+myString+'> 评价</a>'
                     } else return ''
                 },
                 sortable: false
             },
         ],
-        editable: false
+        editable: true
     });
 
 </script>

@@ -55,11 +55,6 @@ body classes:
                 if (result.success) {
                     $("#userlr").attr('style', 'display:none');
                     $("#userlr2").removeAttr("style");
-                    /*                            kendo.ui.showInfoDialog({
-                                                    title: $l('hap.tip.info'),
-                                                    message: $l("hap.success")
-                                                });*/
-                    window.parent.$("#login-window").data("kendoWindow").close();
                 } else {
                     kendo.ui.showErrorDialog({
                         title: $l('hap.error'),
@@ -105,6 +100,26 @@ body classes:
             url: url
         }).center().open();
     }
+    //已完成订单窗口
+    function openOrderFinishWindow() {
+        var url = "${base.contextPath}/order/user_order_finish.html";
+        Hap.createWindow('#orderFinish-window', {
+            width: '80%',
+            height: '80%',
+            title: '已完成订单',
+            url: url
+        }).center().open();
+    }
+    //待确认订单窗口
+    function openUserOrderWindow() {
+        var url = "${base.contextPath}/order/user_order.html";
+        Hap.createWindow('#userOrder-window', {
+            width: '80%',
+            height: '80%',
+            title: '待确认订单',
+            url: url
+        }).center().open();
+    }
     //货物管理窗口
     function openCollectsWindow() {
         var url = "${base.contextPath}/home/goods_collect.html";
@@ -112,6 +127,16 @@ body classes:
             width: '80%',
             height: '90%',
             title: '货物管理',
+            url: url
+        }).center().open();
+    }
+    //地址管理窗口
+    function openAddressWindow() {
+        var url = "${base.contextPath}/home/address.html";
+        Hap.createWindow('#address-window', {
+            width: '80%',
+            height: '90%',
+            title: '地址管理',
             url: url
         }).center().open();
     }
@@ -195,6 +220,9 @@ body classes:
 							<div id="register-window"></div>
                             <div id="collects-window"></div>
 							<div id="placeOrder-window"></div>
+							<div id="orderFinish-window"></div>
+							<div id="userOrder-window"></div>
+							<div id="address-window"></div>
 						</div>
 						<!--							<script>kendo.bind($('#userlr'), viewModel);</script>
                                                     <script>kendo.bind($('#login-window'), viewModel);</script>
@@ -274,18 +302,14 @@ body classes:
 												<ul class="dropdown-menu">
 													<li><a href="features-typography.html">订单管理</a></li>
 													<li class="dropdown">
-														<a href="#" class="dropdown-toggle" data-toggle="dropdown">Pricing
-															tables</a>
+														<a href="#" class="dropdown-toggle" data-toggle="dropdown">订单管理</a>
 														<ul class="dropdown-menu">
-															<li><a href="features-pricing-tables-1.html">Pricing Tables
-																1</a></li>
-															<li><a href="features-pricing-tables-2.html">Pricing Tables
-																2</a></li>
-															<li><a href="features-pricing-tables-3.html">Pricing Tables
-																3</a></li>
+															<li><a href="#" onclick="openUserOrderWindow()">待确认订单</a></li>
+															<li><a href="features-pricing-tables-2.html">Pricing Tables</a></li>
+															<li><a href="#" onclick="openOrderFinishWindow()">已经完成订单</a></li>
 														</ul>
 													</li>
-													<li><a href="features-backgrounds.html">地址管理</a></li>
+													<li><a href="#" onclick="openAddressWindow()">地址管理</a></li>
 													<li><a href="#" onclick="openCollectsWindow()">货物管理</a></li>
 													<li class="dropdown">
 														<a href="#" class="dropdown-toggle"

@@ -70,6 +70,12 @@ public class UserOrderServiceImpl extends BaseServiceImpl<UserOrder> implements 
         PageHelper.startPage(page, pageSize);
         return userOrderMapper.selectByUserId(dto);
     }
+
+    @Override
+    public void updateOrder(UserOrder dto) {
+        userOrderMapper.updateOrder(dto);
+    }
+
     OCarType getOCarType(CarType carType){
         OCarType oCarType=null;
         oCarType.setCarId(carType.getCarId());

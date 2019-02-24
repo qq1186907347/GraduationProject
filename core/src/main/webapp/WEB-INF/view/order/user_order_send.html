@@ -21,50 +21,15 @@
             url: url
         }).center().open();
     }
-
-    function orderFinish(orderId) {
-        kendo.ui.showConfirmDialog({
-        title: $l('hap.tip.info'),
-        message: "确定收货？钱款打到司机账户，且不可以撤销"
-    }).done(function (event) {
-        if (event.button == 'OK') {
-            viewModel.model.set("orderId",orderId);
-            $.ajax({
-                url: '${base.contextPath}/user/order/setFinish',
-                type: 'POST',
-                dataType: "json",
-                data:JSON.stringify(viewModel.model),
-                contentType: "application/json",
-                success: function (result) {
-                    if(result.success){
-                        kendo.ui.showInfoDialog({
-                            title: $l('hap.tip.info'),
-                            message: '操作成功',
-                            buttons: [{
-                                text: kendo.ui.Widget.prototype.options.messages['ok'],
-                                type: 'primary',
-                                click: function (e) {
-                                    window.viewModel.refresh();
-                                    e.dialog.destroy();
-                                    e.deferred.resolve({ button: 'OK' });
-                                }
-                            }],
-                        });
-                    } else {
-                        kendo.ui.showErrorDialog({
-                            title: $l('hap.error'),
-                            message : result.message
-                        });
-                    }
-                }
-            });
-        }
-    })
-
-    }
 </script>
 <body>
 <div id="page-content">
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:create"><@spring.message "hap.new"/></span>
+        <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
+        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
             <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "UserOrder.contactName"/>'
                    data-bind="value:model.contactName" class="k-textbox">
@@ -213,24 +178,12 @@
                 width: 120
             },
             {
-                title:'操作',
-                width : 200,
-                headerAttributes: {
-                    style : "text-align: center"
-                },
-                attributes: {style: "text-align:center"},
-                template : function (rowdata) {
-                    if (rowdata.driverId) {
-                        //把数据都转化成字符串
-                        var myString="orderFinish('"+rowdata.orderId+"')";
-                        //console.log(myString);
-                        return '<button   onclick='+myString+'> 确认收货</button>/ <button onclick='+myString+'> 拒绝付款</button>'
-                    } else return ''
-                },
-                sortable: false
+                field: "orderRemake",
+                title: '操作',
+                width: 120
             },
         ],
-        editable: false
+        editable: true
     });
 
 </script>

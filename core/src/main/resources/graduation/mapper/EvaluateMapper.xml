@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.EvaluateMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.Evaluate">
+        <result column="evaluate_id" property="evaluateId" jdbcType="DECIMAL"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="service_score" property="serviceScore" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL"/>
+        <result column="evaluate_type" property="evaluateType" jdbcType="DECIMAL"/>
+    </resultMap>
+    <insert id="addEvaluate">
+    INSERT  INTO evaluate
+    (content,order_id,service_score,user_id,driver_id,evaluate_type)
+    VALUES (#{content}, #{orderId}, #{serviceScore}, #{userId}, #{driverId},#{evaluateType})
+</insert>
+
+    <select id="selectEvaluate" resultMap="BaseResultMap" parameterType="graduation.dto.Evaluate">
+        SELECT * from
+        evaluate e
+        <where>
+            <if test="orderId!= null">
+                and e.order_id = #{orderId,jdbcType=VARCHAR}
+            </if>
+            <if test="userId!= null">
+                and e.user_id = #{userId,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and e.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="evaluateType!= null">
+                and e.evaluate_type = #{evaluateType,jdbcType=DECIMAL}
+            </if>
+        </where>
+    </select>
+
+</mapper>

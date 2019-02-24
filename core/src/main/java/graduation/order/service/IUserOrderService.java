@@ -12,4 +12,6 @@ public interface IUserOrderService extends IBaseService<UserOrder>, ProxySelf<IU
     void addOrder(UserOrder dto);
 
     List<UserOrder> selectByUserId(IRequest requestContext, UserOrder dto, int page, int pageSize);
+
+    void updateOrder(UserOrder dto);
 }
