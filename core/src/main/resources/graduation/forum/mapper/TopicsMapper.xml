@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.forum.mapper.TopicsMapper">
+    <resultMap id="BaseResultMap" type="graduation.forum.dto.Topics">
+        <result column="topic_id" property="topicId" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="topic_title" property="topicTitle" jdbcType="VARCHAR"/>
+        <result column="topic_content" property="topicContent" jdbcType="VARCHAR"/>
+        <result column="topic_status" property="topicStatus" jdbcType="DECIMAL"/>
+        <result column="CREATION_TIME" property="creationTime" jdbcType="TIMESTAMP"/>
+        <result column="LAST_UPDATE_TIME" property="lastUpdateTime" jdbcType="TIMESTAMP"/>
+        <result column="user_call" property="userCall" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectTopics" resultMap="BaseResultMap" parameterType="graduation.forum.dto.Topics">
+        SELECT t.topic_id,t.user_id,t.topic_title,t.topic_content,t.topic_status,
+        t.creation_time,t.LAST_UPDATE_TIME,
+        u.user_call
+        from
+        topics t,login_user u
+        <where>
+            t.user_id=u.user_id
+            <if test="userId!= null">
+                and t.user_id = #{userId,jdbcType=DECIMAL}
+            </if>
+            <if test="topicTitle!= null">
+                and t.topic_title LIKE concat(concat("%", #{topicTitle,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="topicContent!= null">
+                and t.topic_content = #{topicContent,jdbcType=VARCHAR}
+            </if>
+            <if test="topicStatus!= null">
+                and t.topic_status = #{topicStatus,jdbcType=DECIMAL}
+            </if>
+            <if test="topicId!= null">
+                and t.topic_id = #{topicId,jdbcType=DECIMAL}
+            </if>
+        </where>
+        order by t.last_update_time desc
+    </select>
+
+    <update id="setTopicsTime" parameterType="graduation.forum.dto.Topics">
+        UPDATE topics
+        <set>
+            last_update_time = #{lastUpdateTime}
+        </set>
+        WHERE topic_id = #{topicId,jdbcType=DECIMAL}
+    </update>
+
+    <insert id="addTopics">
+    INSERT  INTO topics (user_id, topic_title, topic_content)
+    VALUES (#{userId}, #{topicTitle}, #{topicContent})
+</insert>
+
+</mapper>

@@ -21,101 +21,15 @@
             url: url
         }).center().open();
     }
-
-    //确认收货
-    function orderFinish(orderId) {
-        kendo.ui.showConfirmDialog({
-        title: $l('hap.tip.info'),
-        message: "确定收货？钱款打到司机账户，且不可以撤销"
-    }).done(function (event) {
-        if (event.button == 'OK') {
-            viewModel.model.set("orderId",orderId);
-            $.ajax({
-                url: '${base.contextPath}/user/order/setFinish',
-                type: 'POST',
-                dataType: "json",
-                data:JSON.stringify(viewModel.model),
-                contentType: "application/json",
-                success: function (result) {
-                    if(result.success){
-                        kendo.ui.showInfoDialog({
-                            title: $l('hap.tip.info'),
-                            message: '操作成功',
-                            buttons: [{
-                                text: kendo.ui.Widget.prototype.options.messages['ok'],
-                                type: 'primary',
-                                click: function (e) {
-                                    window.viewModel.refresh();
-                                    e.dialog.destroy();
-                                    e.deferred.resolve({ button: 'OK' });
-                                }
-                            }],
-                        });
-                    } else {
-                        kendo.ui.showErrorDialog({
-                            title: $l('hap.error'),
-                            message : result.message
-                        });
-                    }
-                }
-            });
-        }
-    })
-    }
-    //拒绝付款
-    function orderRefuse(orderId) {
-        kendo.ui.showConfirmDialog({
-            title: $l('hap.tip.info'),
-            message: "拒绝付款？"
-        }).done(function (event) {
-            if (event.button == 'OK') {
-                viewModel.model.set("orderId",orderId);
-                $.ajax({
-                    url: '${base.contextPath}/user/order/setRefuse',
-                    type: 'POST',
-                    dataType: "json",
-                    data:JSON.stringify(viewModel.model),
-                    contentType: "application/json",
-                    success: function (result) {
-                        if(result.success){
-                            kendo.ui.showInfoDialog({
-                                title: $l('hap.tip.info'),
-                                message: '操作成功,可以在异常订单里进行投诉。',
-                                buttons: [{
-                                    text: kendo.ui.Widget.prototype.options.messages['ok'],
-                                    type: 'primary',
-                                    click: function (e) {
-                                        window.viewModel.refresh();
-                                        e.dialog.destroy();
-                                        e.deferred.resolve({ button: 'OK' });
-                                    }
-                                }],
-                            });
-                        } else {
-                            kendo.ui.showErrorDialog({
-                                title: $l('hap.error'),
-                                message : result.message
-                            });
-                        }
-                    }
-                });
-            }
-        })
-    }
 </script>
 <body>
 <div id="page-content">
-    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "UserOrder.contactName"/>'
-                   data-bind="value:model.contactName" class="k-textbox">
-        <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
-        <div style="clear:both"></div>
-    </div>
-    <script>kendo.bind($('#query-form'), viewModel);</script>
     <div style="clear:both">
         <div id="grid"></div>
         <div id="goodsDetail-window"></div>
-        <div i="driverDetail-window"></div>
+        <div id="driverDetail-window"></div>
+        <div id="addComplain-window"></div>
+        <div id="complainDetail-window"></div>
     </div>
 </div>
 
@@ -125,7 +39,7 @@
     dataSource = new kendo.data.DataSource({
         transport: {
             read: {
-                url: BaseUrl + "/user/order/query/0",
+                url: BaseUrl + "/user/order/query/2",
                 type: "POST",
                 dataType: "json"
             },
@@ -252,24 +166,6 @@
                 field: "orderRemake",
                 title: '备注',
                 width: 120
-            },
-            {
-                title:'操作',
-                width : 200,
-                headerAttributes: {
-                    style : "text-align: center"
-                },
-                attributes: {style: "text-align:center"},
-                template : function (rowdata) {
-                    if (rowdata.driverId) {
-                        //把数据都转化成字符串
-                        var myString="orderFinish('"+rowdata.orderId+"')";
-                        var orderRefuse="orderRefuse('"+rowdata.orderId+"')";
-                        //console.log(myString);
-                        return '<button   onclick='+myString+'> 确认收货</button>/ <button onclick='+orderRefuse+'> 拒绝付款</button>'
-                    } else return ''
-                },
-                sortable: false
             },
         ],
         editable: false

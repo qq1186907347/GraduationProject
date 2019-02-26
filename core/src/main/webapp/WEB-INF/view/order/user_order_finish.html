@@ -14,7 +14,7 @@
     //司机详情
     function openDriverWindow(driverId) {
         var url = "${base.contextPath}/driver/driver_detail.html?driverId="+driverId;
-        Hap.createWindow('#goodsDetail-window', {
+        Hap.createWindow('#driverDetail-window', {
             width: '95%',
             height: '95%',
             title: '司机信息',
@@ -113,6 +113,7 @@
     <div style="clear:both">
         <div id="grid"></div>
         <div id="goodsDetail-window"></div>
+        <div i="driverDetail-window"></div>
         <div id="addEvaluate-window"></div>
         <div id="evaluateDetail-window"></div>
     </div>
@@ -124,7 +125,7 @@
     dataSource = new kendo.data.DataSource({
         transport: {
             read: {
-                url: BaseUrl + "/user/order/query/finish",
+                url: BaseUrl + "/user/order/query/1",
                 type: "POST",
                 dataType: "json"
             },

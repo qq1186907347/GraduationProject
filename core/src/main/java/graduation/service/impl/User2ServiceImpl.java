@@ -8,6 +8,8 @@ import graduation.dto.User2;
 import graduation.service.IUser2Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class User2ServiceImpl extends BaseServiceImpl<User2> implements IUser2Service{
@@ -27,5 +29,10 @@ public class User2ServiceImpl extends BaseServiceImpl<User2> implements IUser2Se
     @Override
     public User2 checkLogin(User2 dto) {
         return user2Mapper.checkLogin(dto);
+    }
+
+    @Override
+    public List<User2> selectUser(User2 dto) {
+        return user2Mapper.selectUser(dto);
     }
 }

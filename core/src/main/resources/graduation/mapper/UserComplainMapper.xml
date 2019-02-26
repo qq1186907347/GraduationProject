@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.UserComplainMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.UserComplain">
+        <result column="complain_id" property="complainId" jdbcType="DECIMAL" />
+        <result column="user_id" property="userId" jdbcType="DECIMAL" />
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL" />
+        <result column="order_id" property="orderId" jdbcType="DECIMAL" />
+        <result column="real_name" property="realName" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="complain_reason" property="complainReason" jdbcType="VARCHAR" />
+        <result column="complain_content" property="complainContent" jdbcType="VARCHAR" />
+        <result column="complain_status" property="complainStatus" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <select id="selectUserComplain" resultMap="BaseResultMap" parameterType="graduation.dto.UserComplain">
+        SELECT * from
+        user_complain e
+        <where>
+            <if test="orderId!= null">
+                and e.order_id = #{orderId,jdbcType=DECIMAL}
+            </if>
+            <if test="userId!= null">
+                and e.user_id = #{userId,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and e.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="complainStatus!= null">
+                and e.complain_status = #{complainStatus,jdbcType=DECIMAL}
+            </if>
+            <if test="realName!= null">
+                and e.real_name LIKE concat(concat("%", #{realName,jdbcType=VARCHAR}), "%")
+            </if>
+        </where>
+    </select>
+
+    <insert id="addComplain">
+    INSERT  INTO user_complain
+    (user_id,driver_id,order_id, complain_reason, complain_content, complain_status,real_name,phone)
+    VALUES (#{userId}, #{driverId}, #{orderId}, #{complainReason}, #{complainContent},#{complainStatus},#{realName},#{phone})
+</insert>
+
+
+</mapper>

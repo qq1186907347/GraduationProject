@@ -1,0 +1,132 @@
+<#include "../include/header.html">
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+    });
+
+    function addTopics(){
+        if(checkFrom()){
+            $.ajax({
+                url: '${base.contextPath}/topics/add',
+                type: 'POST',
+                dataType: "json",
+                data:JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if(result.success){
+                        kendo.ui.showInfoDialog({
+                            title: $l('hap.tip.info'),
+                            message: "发布成功",
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.viewModel.refresh();
+                                    window.parent.$("#addTopics-window").data("kendoWindow").close();
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
+                        });
+                        // close this window
+
+                    } else {
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message : result.message
+                        });
+                    }
+                }
+            });
+        }
+    }
+    //表单校验
+    function checkFrom() {
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+
+</script>
+<style>
+    .div{
+        margin:0 auto;
+        width:90rem;
+    }
+    .tab-p {
+        text-align: center;
+        font-size: 2rem;
+        margin: 0.7rem;
+        font-family: "Arial Black", arial-black;
+        font-weight: bold;
+    }
+    .div-out {
+        margin-top: 1.5rem;
+
+    }
+
+    .font-p {
+        margin-top: 1rem;
+        height:3rem;
+        color: black;
+        font-size: 1.4rem;
+
+    }
+
+    .font-input {
+        margin-top: 1rem;
+        height: 3rem;
+        width: 100%;
+    }
+    .star{
+        padding-right: 1rem;
+        color: red;
+    }
+
+</style>
+<body>
+<div class="div" id="pageContext">
+    <div id="baseMessage">
+        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#199ed8;border-radius:0.5rem;">
+            <div class="col-md-12 tab-p">新增帖子</div>
+        </div>
+
+        <div class="row div-out" >
+            <div class="col-md-12 tab-p" style="text-align: left">发布新帖</div>
+            <div class="col-md-2 font-p">
+                <span class="star">*</span>主题
+            </div>
+            <div class="col-md-10 ">
+                <input id="topicTitle" maxlength="30" name="主题"  required validationMessage="必填，不能超过30个字" type="text" class="font-input k-textbox k-valid"  data-bind="value:model.topicTitle">
+            </div>
+            <script>kendo.bind($('#topicTitle'), viewModel);</script>
+
+        </div>
+        <div class="row div-out" >
+            <div class="col-md-2 font-p">
+                <span class="star">*</span>
+            </div>
+            <div class="col-md-10 ">
+                <textarea  id="topicContent"  required  data-bind="value:model.topicContent" style="width: 100%;height: 15rem;resize: none;"  class="k-textbox" maxlength="150" name="内容"  validationMessage="必填，不能超过150个字"></textarea>
+            </div>
+            <script>kendo.bind($('#topicContent'), viewModel);</script>
+        </div>
+
+            <div class="col-md-6 font-p" style="text-align: center">
+             <span class="btn btn-primary k-grid-add" onclick="addTopics()"><i class="fa fa-plus-square" ></i>发布</span>
+            </div>
+    </div>
+</div>
+</body>
+</html>

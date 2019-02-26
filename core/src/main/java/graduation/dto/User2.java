@@ -17,6 +17,7 @@ public class User2 {
      public static final String FIELD_REAL_NAME = "realName";
      public static final String FIELD_PASSWORD = "password";
      public static final String FIELD_PHONE = "phone";
+    public static final String FIELD_USER_CALL = "userCall";
 
      @Id
      @GeneratedValue
@@ -36,6 +37,10 @@ public class User2 {
      @NotEmpty
      @Length(max = 40)
      private String phone; //电话号码
+
+    @NotEmpty
+    @Length(max = 20)
+    private String userCall;//昵称
 
 
      public void setUserId(Long userId){
@@ -78,4 +83,11 @@ public class User2 {
          return phone;
      }
 
-     }
+    public String getUserCall() {
+        return userCall;
+    }
+
+    public void setUserCall(String userCall) {
+        this.userCall = userCall;
+    }
+}

@@ -110,6 +110,17 @@ body classes:
             url: url
         }).center().open();
     }
+    //拒绝付款订单窗口
+    function openOrderRefuseWindow() {
+        var url = "${base.contextPath}/order/user_order_refuse.html";
+        Hap.createWindow('#orderRefuse-window', {
+            width: '80%',
+            height: '80%',
+            title: '拒绝付款订单',
+            url: url
+        }).center().open();
+    }
+
     //待确认订单窗口
     function openUserOrderWindow() {
         var url = "${base.contextPath}/order/user_order.html";
@@ -221,6 +232,7 @@ body classes:
                             <div id="collects-window"></div>
 							<div id="placeOrder-window"></div>
 							<div id="orderFinish-window"></div>
+							<div id="orderRefuse-window"></div>
 							<div id="userOrder-window"></div>
 							<div id="address-window"></div>
 						</div>
@@ -305,7 +317,7 @@ body classes:
 														<a href="#" class="dropdown-toggle" data-toggle="dropdown">订单管理</a>
 														<ul class="dropdown-menu">
 															<li><a href="#" onclick="openUserOrderWindow()">待确认订单</a></li>
-															<li><a href="features-pricing-tables-2.html">Pricing Tables</a></li>
+															<li><a href="#" onclick="openOrderRefuseWindow()">拒绝付款订单</a></li>
 															<li><a href="#" onclick="openOrderFinishWindow()">已经完成订单</a></li>
 														</ul>
 													</li>
@@ -354,89 +366,8 @@ body classes:
 											</li>
 											<!-- mega-menu start -->
 											<li class="dropdown mega-menu">
-												<a href="#" class="dropdown-toggle"
-												   data-toggle="dropdown">Components</a>
-												<ul class="dropdown-menu">
-													<li>
-														<div class="row">
-															<div class="col-sm-4 col-md-6">
-																<h4>iDea - Powerful Bootstrap Theme</h4>
-																<p>iDea is a Clean and Super Flexible Bootstrap Theme
-																	with many Features and Unlimited options.</p>
-																<img src="${base.contextPath}/resources/images/section-image-1.png"
-																	 alt="image-1">
-															</div>
-															<div class="col-sm-8 col-md-6">
-																<h4>Components</h4>
-																<div class="row">
-																	<div class="col-sm-6">
-																		<div class="divider"></div>
-																		<ul class="menu">
-																			<li>
-																				<a href="components-tabs-and-pills.html"><i
-																						class="icon-right-open"></i>Tabs
-																					&amp; Pills</a></li>
-																			<li><a href="components-accordions.html"><i
-																					class="icon-right-open"></i>Accordions</a>
-																			</li>
-																			<li>
-																				<a href="components-social-icons.html"><i
-																						class="icon-right-open"></i>Social
-																					Icons</a></li>
-																			<li><a href="components-buttons.html"><i
-																					class="icon-right-open"></i>Buttons</a>
-																			</li>
-																			<li><a href="components-forms.html"><i
-																					class="icon-right-open"></i>Forms</a>
-																			</li>
-																			<li><a href="components-progress-bars.html"><i
-																					class="icon-right-open"></i>Progress
-																				bars</a></li>
-																			<li>
-																				<a href="components-alerts-and-callouts.html"><i
-																						class="icon-right-open"></i>Alerts
-																					&amp; Callouts</a></li>
-																			<li>
-																				<a href="components-content-sliders.html"><i
-																						class="icon-right-open"></i>Content
-																					Sliders</a></li>
-																		</ul>
-																	</div>
-																	<div class="col-sm-6">
-																		<div class="divider"></div>
-																		<ul class="menu">
-																			<li><a href="components-lightbox.html"><i
-																					class="icon-right-open"></i>Lightbox</a>
-																			</li>
-																			<li><a href="components-icon-boxes.html"><i
-																					class="icon-right-open"></i>Icon
-																				Boxes</a></li>
-																			<li><a href="components-image-boxes.html"><i
-																					class="icon-right-open"></i>Image
-																				Boxes</a></li>
-																			<li>
-																				<a href="components-video-and-audio.html"><i
-																						class="icon-right-open"></i>Video
-																					&amp; Audio</a></li>
-																			<li><a href="components-modals.html"><i
-																					class="icon-right-open"></i>Modals</a>
-																			</li>
-																			<li><a href="components-animations.html"><i
-																					class="icon-right-open"></i>Animations</a>
-																			</li>
-																			<li><a href="components-counters.html"><i
-																					class="icon-right-open"></i>Counters</a>
-																			</li>
-																			<li><a href="components-tables.html"><i
-																					class="icon-right-open"></i>Tables</a>
-																			</li>
-																		</ul>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</li>
-												</ul>
+												<a href="${base.contextPath}/forum/topics.html" class="dropdown-toggle"
+												   data-toggle="dropdown">用户论坛</a>
 											</li>
 											<!-- mega-menu end -->
 											<li class="dropdown">

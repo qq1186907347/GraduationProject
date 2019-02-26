@@ -1,0 +1,9 @@
+<#include "../include/header.html">
+<body>
+<div style="width:780px;margin:10px;">
+    <p style="color: red;">请上传投诉相关图片</p>
+    ${attachmentProvider.getAttachHtml("COMPLAIN_PICTURE",
+    RequestParameters.orderId,base.locale, base.contextPath,true,true)}
+</div>
+</body>
+</html>
