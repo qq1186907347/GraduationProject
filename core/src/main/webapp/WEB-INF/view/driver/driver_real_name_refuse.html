@@ -843,13 +843,40 @@
         });
 
         var driverId =${RequestParameters.driverId!-1};
+        var messageId =${RequestParameters.messageId!-1};
         Hap.loadViewModel({
-            url: "${base.contextPath}/driver/message/query/" + driverId,
+            url: "${base.contextPath}/driver/message/refuse/" + driverId,
             model: viewModel.model
         });
-
-        setup();preselect('江苏省');promptinfo();
+        setup();preselect('广东省');promptinfo();
+        getRefuseContent(messageId);
     })
+
+    //获取拒绝内容
+    function getRefuseContent(messageId) {
+        $.ajax({
+            url: '${base.contextPath}/refuse/result/query/'+messageId,
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    kendo.ui.showErrorDialog({
+                        title: "实名认证失败反馈：",
+                        message: result.message
+                    });
+                } else {
+                    viewModel.model.set('driverId',result.total);
+                    console.log("driverId:"+result.total);
+                    kendo.ui.showErrorDialog({
+                        title: $l('hap.error'),
+                        message: result.message
+                    });
+                }
+            }
+        });
+    }
 
     var viewModel = kendo.observable({
         model: {},

@@ -7,6 +7,8 @@
         <result column="collect_name" property="collectName" jdbcType="VARCHAR"/>
         <result column="collect_type" property="collectType" jdbcType="VARCHAR"/>
         <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="collect_status" property="collectStatus" jdbcType="DECIMAL"/>
+
     </resultMap>
 
 <insert id="addCollect">
@@ -16,9 +18,7 @@
 
 <select id="selectCollect" resultMap="BaseResultMap" parameterType="graduation.dto.GoodsCollect">
         SELECT
-        gc.collect_id,
-        gc.collect_name,
-        gc.collect_type
+          *
          from
         goods_collect gc
         <where>
@@ -32,8 +32,19 @@
             <if test="collectType != null">
                 and gc.collect_type LIKE concat(concat("%", #{collectType,jdbcType=VARCHAR}), "%")
             </if>
+            <if test="collectStatus != null">
+                and gc.collect_status = #{collectStatus,jdbcType=DECIMAL}
+            </if>
         </where>
 </select>
+
+    <update id="setCollectStatus" parameterType="graduation.dto.GoodsCollect">
+        UPDATE goods_collect
+        <set>
+            collect_status = #{collectStatus,jdbcType=DECIMAL}
+        </set>
+        WHERE collect_id = #{collectId,jdbcType=DECIMAL}
+    </update>
 
 
 </mapper>

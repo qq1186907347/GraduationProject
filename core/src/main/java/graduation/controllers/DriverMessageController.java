@@ -2,6 +2,8 @@ package graduation.controllers;
 
 import com.hand.hap.attachment.dto.Attachment;
 import com.hand.hap.attachment.service.IAttachmentService;
+import graduation.dto.DriverCar;
+import graduation.service.IDriverCarService;
 import org.springframework.stereotype.Controller;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.core.IRequest;
@@ -24,6 +26,8 @@ public class DriverMessageController extends BaseController {
     @Autowired
     private IDriverMessageService service;
     @Autowired
+    private IDriverCarService driverCarService;
+    @Autowired
     IAttachmentService attachmentService;
 
 
@@ -45,12 +49,24 @@ public class DriverMessageController extends BaseController {
         dto.setDriverId(driverId);
         return new ResponseData(service.isAuthenticated(dto));
     }
-    /**已经完成认证的司机*/
+
+    @RequestMapping(value = "/driver/message/refuse/{driverId}")
+    @ResponseBody
+    public ResponseData queryRefuse(DriverMessage dto, HttpServletRequest request, @PathVariable Long driverId) {
+        IRequest requestContext = createRequestContext(request);
+        dto.setMessageStatus(2L);
+        dto.setDriverId(driverId);
+        return new ResponseData(service.isAuthenticated(dto));
+    }
+
+    /**
+     * 已经完成认证的司机
+     */
     @RequestMapping(value = "/driver/message/query2/{driverId}")
     @ResponseBody
     public ResponseData query2(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
-                              @PathVariable Long driverId) {
+                               @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
+                               @PathVariable Long driverId) {
         IRequest requestContext = createRequestContext(request);
         dto.setMessageStatus(1L);
         dto.setDriverId(driverId);
@@ -79,9 +95,15 @@ public class DriverMessageController extends BaseController {
             driverMessage = dto.get(0);
             //车辆信息未填写
             if (driverMessage.getCarList() == null) {
-                responseData.setSuccess(false);
-                responseData.setMessage("请填写车辆信息！");
-                return responseData;
+                DriverCar bean=new DriverCar();
+                bean.setDriverId(driverMessage.getDriverId());
+                List<DriverCar> driverCars=driverCarService.selectCars(bean);
+                if(driverCars.size()==0){
+                    responseData.setRows(driverCars);
+                    responseData.setSuccess(false);
+                    responseData.setMessage("请填写车辆信息！");
+                    return responseData;
+                }
             }
             /**根据driverId获取附件*/
             Attachment attCar = attachmentService.selectAttachByCodeAndKey(requestContext, "CAR_REAL_NAME", String.valueOf(driverId));
@@ -100,7 +122,12 @@ public class DriverMessageController extends BaseController {
             }
             driverMessage.setDriverId(driverId);
             driverMessage.setMessageStatus(0L);
-            service.addMessage(driverMessage);
+            if(driverMessage.getMessageId()!=null){
+                driverMessage.setMessageStatus(0L);
+                service.updateMessageById(driverMessage);
+            }else{
+                service.addMessage(driverMessage);
+            }
 
             return new ResponseData(dto);
         } catch (Exception e) {
@@ -158,7 +185,16 @@ public class DriverMessageController extends BaseController {
         dto.setMessageStatus(1L);
         //已经通过实名认证了
         List<DriverMessage> driverMessages3 = service.isAuthenticated(dto);
-        if (driverMessages.size() == 0&&driverMessages3.size()==0) {
+        dto.setMessageStatus(2L);
+        //已经拒绝的实名
+        List<DriverMessage> driverMessages4 = service.isAuthenticated(dto);
+
+        if (driverMessages4.size() > 0) {
+            responseData.setSuccess(false);
+            responseData.setCode(String.valueOf(driverMessages4.get(0).getMessageId()));
+            responseData.setTotal(driverId);
+            responseData.setMessage("您的实名被拒绝了");
+        } else if (driverMessages.size() == 0 && driverMessages3.size() == 0) {
             responseData.setSuccess(false);
             //把driverId返回前端页面
             responseData.setTotal(driverId);

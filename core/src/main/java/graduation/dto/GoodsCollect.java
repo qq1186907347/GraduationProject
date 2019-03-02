@@ -23,6 +23,7 @@ public class GoodsCollect extends BaseDTO {
      public static final String FIELD_COLLECT_NAME = "collectName";
      public static final String FIELD_COLLECT_TYPE = "collectType";
      public static final String FIELD_USER_ID = "userId";
+     public static final String FIELD_COLLECT_SATTUS = "collectStatus";
 
 
      @Id
@@ -42,6 +43,8 @@ public class GoodsCollect extends BaseDTO {
      private List<Goods> goodsList;
 
      private Long userId;
+
+     private Long collectStatus;
 
 
      public void setCollectId(Long collectId){
@@ -75,4 +78,12 @@ public class GoodsCollect extends BaseDTO {
      public Long getUserId() { return userId; }
 
      public void setUserId(Long userId) { this.userId = userId; }
+
+     public Long getCollectStatus() {
+          return collectStatus;
+     }
+
+     public void setCollectStatus(Long collectStatus) {
+          this.collectStatus = collectStatus;
+     }
 }

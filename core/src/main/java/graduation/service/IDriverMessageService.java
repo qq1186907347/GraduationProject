@@ -19,4 +19,6 @@ public interface IDriverMessageService extends IBaseService<DriverMessage>, Prox
     boolean setUnPass(List<DriverMessage> dto);
 
     List<DriverMessage>  isAuthenticated(DriverMessage dto);
+
+    void updateMessageById(DriverMessage driverMessage);
 }

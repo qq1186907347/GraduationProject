@@ -44,7 +44,6 @@ body classes:
 
     //加载数据
     function getData() {
-        viewModel.model.set('driverId', '1');
         $.ajax({
             url: '${base.contextPath}/driver/getDriverId',
             type: 'POST',
@@ -83,7 +82,6 @@ body classes:
                     $("#realNameAuthentication").attr('style', 'display:none');
                 } else {
                     viewModel.model.set('driverId',result.total);
-                    console.log("driverId:"+result.total);
                     kendo.ui.showErrorDialog({
                         title: $l('hap.error'),
                         message: result.message
@@ -92,10 +90,14 @@ body classes:
                         $("#authentication").removeAttr("onclick");
                         $("#authentication").attr('onclick', 'openAuthenticateWindow2()');
                     }
+                    if(result.message=="您的实名被拒绝了"){
+                        viewModel.model.set('messageId',result.code);
+                        $("#authentication").removeAttr("onclick");
+                        $("#authentication").attr('onclick', 'openAuthenticateWindow3()');
+                    }
                 }
             }
         });
-        
     }
 
 
@@ -166,6 +168,18 @@ body classes:
     function openAuthenticateWindow2() {
         var driverId=viewModel.model.get("driverId");
         var url = "${base.contextPath}/driver/driver_real_name2.html?driverId="+driverId;
+        Hap.createWindow('#authenticate-window',{
+            width: '90%',
+            height: '90%',
+            title: '司机实名认证',
+            url: url
+        }).center().open();
+    }
+    //认证窗口
+    function openAuthenticateWindow3() {
+        var messageId=viewModel.model.get("messageId");
+        var driverId=viewModel.model.get("driverId");
+        var url = "${base.contextPath}/driver/driver_real_name_refuse.html?messageId="+messageId+"&driverId="+driverId;
         Hap.createWindow('#authenticate-window',{
             width: '90%',
             height: '90%',

@@ -95,4 +95,9 @@ public class DriverMessageServiceImpl extends BaseServiceImpl<DriverMessage> imp
        return driverMessageMapper.isAuthenticated(dto);
     }
 
+    @Override
+    public void updateMessageById(DriverMessage driverMessage) {
+        driverMessageMapper.updateMessageById(driverMessage);
+    }
+
 }

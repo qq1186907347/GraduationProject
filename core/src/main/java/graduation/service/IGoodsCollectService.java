@@ -11,4 +11,6 @@ public interface IGoodsCollectService extends IBaseService<GoodsCollect>, ProxyS
     boolean addCollect(GoodsCollect dto);
 
     List<GoodsCollect> selectCollect(GoodsCollect dto);
+
+    void setCollectStatus(List<GoodsCollect> dto);
 }

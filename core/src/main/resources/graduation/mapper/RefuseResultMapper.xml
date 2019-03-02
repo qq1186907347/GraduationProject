@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.RefuseResultMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.RefuseResult">
+        <result column="re_id" property="reId" jdbcType="DECIMAL" />
+        <result column="refuse_content" property="refuseContent" jdbcType="VARCHAR" />
+        <result column="message_id" property="messageId" jdbcType="DECIMAL" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="refuse_status" property="refuseStatus" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <insert id="addResult">
+    INSERT  INTO refuse_result (refuse_content, message_id)
+    VALUES (#{refuseContent}, #{messageId})
+</insert>
+
+    <select id="selectRefuse" resultMap="BaseResultMap" parameterType="graduation.dto.RefuseResult">
+        SELECT
+        *
+        from
+        refuse_result e
+        <where>
+            1=1
+            <if test="reId!= null">
+                and e.re_id = #{reId,jdbcType=DECIMAL}
+            </if>
+            <if test="messageId!= null">
+                and e.message_id = #{messageId,jdbcType=DECIMAL}
+            </if>
+            <if test="refuseStatus!= null">
+                and e.refuse_status = #{refuseStatus,jdbcType=DECIMAL}
+            </if>
+            <if test="refuseContent!= null">
+                and e.refuse_content LIKE concat(concat("%", #{refuseContent,jdbcType=VARCHAR}), "%")
+            </if>
+        </where>
+        order by e.create_time desc
+    </select>
+</mapper>

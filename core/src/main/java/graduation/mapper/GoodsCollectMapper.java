@@ -10,4 +10,6 @@ public interface GoodsCollectMapper extends Mapper<GoodsCollect>{
     void addCollect(GoodsCollect dto);
 
     List<GoodsCollect> selectCollect(GoodsCollect dto);
+
+    void setCollectStatus(GoodsCollect collect);
 }

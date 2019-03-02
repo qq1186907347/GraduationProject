@@ -5,9 +5,9 @@
 <body>
 <div id="page-content">
     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="selectItem()">审核通过</span>
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="selectPass()">审核通过</span>
         <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
-        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
+        <span  class="btn btn-danger" style="float:left;" onclick="selectUnpass()">审核不通过</span>
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
@@ -55,7 +55,7 @@
         win.center().open();
     }
     //选择审核
-    function selectItem() {
+    function selectPass() {
         var sum=0;
         var driverMessage=$("#grid").data("kendoGrid").selectedDataItems();
         for(var i in driverMessage){
@@ -94,6 +94,28 @@
         }
 
     }
+
+    function selectUnpass() {
+        var sum=0;
+        var messageId;
+        var driverMessage=$("#grid").data("kendoGrid").selectedDataItems();
+        for(var i in driverMessage){
+            sum++;
+            messageId=driverMessage[i].messageId;
+        }
+        if(sum==0){
+            kendo.ui.showInfoDialog({
+                message:"请选择需要审核的信息！"
+            });
+        }else if(sum>1){
+            kendo.ui.showInfoDialog({
+                message:"只能选择一条数据！"
+            });
+        }
+        else{
+            openUnpassWindow(messageId);
+        }
+    }
     //认证窗口
     function openAuthenticateWindow(driverId) {
         var url = "${base.contextPath}/driver/driver_real_name2.html?driverId="+driverId;
@@ -101,6 +123,17 @@
             width: '90%',
             height: '90%',
             title: '司机实名认证',
+            url: url
+        }).center().open();
+    }
+
+    //审核不通过窗口
+    function openUnpassWindow(messageId) {
+        var url = "${base.contextPath}/driver/message_unpass.html?messageId="+messageId;
+        Hap.createWindow('#unpass-window',{
+            width: '90%',
+            height: '90%',
+            title: '审核不通过',
             url: url
         }).center().open();
     }
@@ -189,10 +222,23 @@
                 title: '民族',
                 width: 120
             },
-                    {
-                field: "address",
-                title: '家庭地址',
-                width: 120
+            {
+                title:'家庭地址',
+                width : 350,
+                headerAttributes: {
+                    style : "text-align: center"
+                },
+                attributes: {style: "text-align:center"},
+                template : function (rowdata) {
+                    console.log(1);
+                    if (rowdata.province) {
+                        //把数据都转化成字符串
+                        var myString="openAuthenticateWindow('"+rowdata.driverId+"')";
+                        //console.log(myString);
+                        return '<input readonly="readonly" type="text" style="border-width: 0rem;width: 100%" value="'+rowdata.province+rowdata.city+rowdata.town+rowdata.addressDetail+'">'
+                    } else return ''
+                },
+                sortable: false
             },
                     {
                 field: "birthday",
@@ -202,22 +248,7 @@
                     {
                 field: "idCard",
                 title: '身份证号码',
-                width: 120
-            },
-                    {
-                field: "contactName",
-                title: '联系人姓名',
-                width: 120
-            },
-                    {
-                field: "contactPhone",
-                title: '联系人电话',
-                width: 120
-            },
-                    {
-                field: "relation",
-                title: '与联系人关系',
-                width: 120
+                width: 150
             },
             {
                 title:'详细资料',
@@ -274,12 +305,13 @@
                 sortable: false
             },
         ],
-        editable: true
+        editable: false
     });
 
 </script>
 <div id="driver-window"></div>
 <div id="car-window"></div>
 <div id="authenticate-window"></div>
+<div id="unpass-window"></div>
 </body>
 </html>

@@ -134,8 +134,9 @@
 
     //确认下订单
     function confirmOrder(){
+        var startAddressId=viewModel.model.get('startAddressId')
         $.ajax({
-            url: '${base.contextPath}/user/order/add',
+            url: '${base.contextPath}/user/order/add/'+startAddressId,
             type: 'POST',
             dataType: "json",
             data:JSON.stringify(viewModel.model),

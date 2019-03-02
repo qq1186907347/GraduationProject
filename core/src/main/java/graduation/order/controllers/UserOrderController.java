@@ -90,9 +90,9 @@ public class UserOrderController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/user/order/add")
+    @RequestMapping(value = "/user/order/add/{startAddressId}")
     @ResponseBody
-    public ResponseData addOrder(@RequestBody UserOrder dto, HttpServletRequest request) {
+    public ResponseData addOrder(@RequestBody UserOrder dto, HttpServletRequest request,@PathVariable Long startAddressId) {
         IRequest requestContext = createRequestContext(request);
         try {
             HttpSession session = request.getSession();
@@ -100,7 +100,7 @@ public class UserOrderController extends BaseController {
             Long userId = (Long) session.getAttribute("userId");
             dto.setUserId(userId);
             dto.setOrderStatus(0L);
-            service.addOrder(dto);
+            service.addOrder(dto,startAddressId);
             return new ResponseData(true);
         } catch (Exception e) {
             e.getMessage();

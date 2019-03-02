@@ -11,6 +11,8 @@ import graduation.service.IGoodsCollectService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -20,6 +22,11 @@ public class GoodsCollectServiceImpl extends BaseServiceImpl<GoodsCollect> imple
     GoodsCollectMapper goodsCollectMapper;
     @Autowired
     GoodsMapper goodsMapper;
+
+    /**
+     * 定义锁对象
+     */
+    private Lock lock = new ReentrantLock();
     @Override
     public boolean addCollect(GoodsCollect dto) {
         try {
@@ -34,6 +41,23 @@ public class GoodsCollectServiceImpl extends BaseServiceImpl<GoodsCollect> imple
     @Override
     public List<GoodsCollect> selectCollect(GoodsCollect dto) {
         return goodsCollectMapper.selectCollect(dto);
+    }
+
+    @Override
+    public void setCollectStatus(List<GoodsCollect> dto) {
+        try{
+            lock.lock();
+            for(GoodsCollect collect:dto){
+                collect.setCollectStatus(1L);
+                goodsCollectMapper.setCollectStatus(collect);
+            }
+        }catch (Exception e){
+            throw  e;
+        }finally {
+            lock.unlock();
+
+        }
+
     }
 
     /**

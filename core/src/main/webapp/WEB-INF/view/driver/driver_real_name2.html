@@ -116,13 +116,13 @@
         <div class="row div-out" style="padding-top: 1rem">
             <div class="col-md-1 font-p">姓名</div>
             <div class="col-md-3 ">
-                <input id="realName" name="姓名" required placeholder="姓名"  type="text" class="font-input k-textbox"  data-bind="value:model.realName">
+                <input readonly="readonly" id="realName" name="姓名" required placeholder="姓名"  type="text" class="font-input k-textbox"  data-bind="value:model.realName">
             </div>
             <script>kendo.bind($('#realName'), viewModel);</script>
             <div class="col-md-1 font-p ">电话</div>
             <div class="col-md-2 div-out">
 
-                <input id="phone"  name="电话" placeholder="1【3,4,5,7,8】xxxx,11位"   pattern="^[1][3,4,5,7,8][0-9]{9}$"
+                <input readonly="readonly" id="phone"  name="电话" placeholder="1【3,4,5,7,8】xxxx,11位"   pattern="^[1][3,4,5,7,8][0-9]{9}$"
                        data-role="maskedtextbox" type="text"
                        required data-bind="value:model.phone"class="font-input k-textbox" />
             </div>
@@ -131,7 +131,7 @@
             <div class="col-md-1 font-p ">出生年月日</div>
             <div class="col-md-4 div-out">
 
-                <input id="birthday" name="出生年月日"  placeholder="出生年月日，格式：1996-01-01" pattern="^((19[2-9]\d{1})|(20((0[0-9])|(1[0-8]))))\-((0?[1-9])|(1[0-2]))\-((0?[1-9])|([1-2][0-9])|30|31)$"
+                <input readonly="readonly" id="birthday" name="出生年月日"  placeholder="出生年月日，格式：1996-01-01" pattern="^((19[2-9]\d{1})|(20((0[0-9])|(1[0-8]))))\-((0?[1-9])|(1[0-2]))\-((0?[1-9])|([1-2][0-9])|30|31)$"
                        data-role="maskedtextbox" type="text" style="width: 50%"
                        required data-bind="value:model.birthday" class="font-input k-textbox" />
             </div>
@@ -141,40 +141,58 @@
         <div class="row div-out">
             <div class="col-md-1 font-p">身份证</div>
             <div class="col-md-3">
-                <input type="text" pattern="^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$" name="身份证" required placeholder="身份证" id="idCard" class="font-input k-textbox" data-bind="value:model.idCard">
+                <input readonly="readonly" type="text" pattern="^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$" name="身份证" required placeholder="身份证" id="idCard" class="font-input k-textbox" data-bind="value:model.idCard">
             </div>
             <script>kendo.bind($('#idCard'), viewModel);</script>
             <div class="col-md-1 font-p">民族</div>
             <div class="col-md-2">
-                <input id="nation"  name=民族 type="text" style="width: 100%"
+                <input readonly="readonly"id="nation"  name=民族 type="text" style="width: 100%"
                        placeholder="民族"    data-bind="value:model.nation" class="k-textbox" required="required">
             </div>
             <script>kendo.bind($('#nation'), viewModel);</script>
 
             <div class="col-md-1 font-p">性别</div>
             <div class="col-md-2">
-                <input required name="性别" id="gender" class="font-input "  data-bind="value:model.gender">
+                <input readonly="readonly" required name="性别" id="gender" class="font-input "  data-bind="value:model.gender">
 
             </div>
         </div>
         <div class="row div-out">
             <div class="col-md-1 font-p">家庭住址</div>
             <div class="col-md-8">
-                <input required name="家庭住址" type="text" placeholder="家庭住址" id="address" class="font-input k-textbox" data-bind="value:model.address">
+                <div class="col-md-6 line-style">
+                    <div class="col-md-4">
+                    <input  readonly="readonly" class=" k-textbox k-valid" id="province" required  name="province" data-bind="value:model.province">
+                    <script>kendo.bind($('#province'), viewModel);</script>
+                    </div>
+                    <div class="col-md-4">
+                    <input readonly="readonly"class=" k-textbox k-valid" id="city" required  name="city" data-bind="value:model.city">
+                    <script>kendo.bind($('#city'), viewModel);</script>
+                    </div>
+                    <div class="col-md-4">
+                    <input readonly="readonly" class=" k-textbox k-valid" id="town" required name="town" data-bind="value:model.town">
+                    <script>kendo.bind($('#town'), viewModel);</script>
+                    </div>
+                </div>
+
+                <div class="col-md-6 line-style">
+                    <span>详细地址</span><input readonly="readonly" id="addressDetail" name="详细地址" style="width: 70%;margin-left: 1rem" required type="text"
+                                            class=" k-textbox k-valid" data-bind="value:model.addressDetail">
+                    <script>kendo.bind($('#addressDetail'), viewModel);</script>
+                </div>
             </div>
-            <script>kendo.bind($('#address'), viewModel);</script>
         </div>
 
         <div class="row div-out">
             <div class="col-md-12 font-p">联系人</div>
             <div class="col-md-1 font-p">联系人姓名</div>
             <div class="col-md-2">
-                <input  name="联系人姓名" required placeholder="联系人姓名" id="contactName"type="text" class="font-input k-textbox" data-bind="value:model.contactName">
+                <input readonly="readonly" name="联系人姓名" required placeholder="联系人姓名" id="contactName"type="text" class="font-input k-textbox" data-bind="value:model.contactName">
             </div>
             <script>kendo.bind($('#contactName'), viewModel);</script>
             <div class="col-md-1 font-p">联系人电话</div>
             <div class="col-md-2">
-                <input name="联系人电话" id="contactPhone" required name="电话" placeholder="1【3,4,5,7,8】xxxx,11位"   pattern="^[1][3,4,5,7,8][0-9]{9}$"
+                <input readonly="readonly" name="联系人电话" id="contactPhone" required name="电话" placeholder="1【3,4,5,7,8】xxxx,11位"   pattern="^[1][3,4,5,7,8][0-9]{9}$"
                        data-role="maskedtextbox" type="text" style="width: 100%"
                        data-bind="value:model.contactPhone" class="k-textbox" >
             </div>
@@ -182,7 +200,7 @@
 
             <div class="col-md-1 font-p">与联系人关系</div>
             <div class="col-md-2">
-                <input id="relation" name="与联系人关系" required  placeholder="关系:(父子，朋友，其他)" type="text" class="font-input k-textbox" data-bind="value:model.relation">
+                <input readonly="readonly" id="relation" name="与联系人关系" required  placeholder="关系:(父子，朋友，其他)" type="text" class="font-input k-textbox" data-bind="value:model.relation">
             </div>
             <script>kendo.bind($('#relation'), viewModel);</script>
         </div>
@@ -378,7 +396,7 @@
                             width: 120
                         },
                     ],
-                    editable: true
+                    editable: false
                 });
 
             </script>

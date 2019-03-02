@@ -7,7 +7,10 @@
         <result column="real_name" property="realName" jdbcType="VARCHAR" />
         <result column="gender" property="gender" jdbcType="VARCHAR" />
         <result column="nation" property="nation" jdbcType="VARCHAR" />
-        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="province" property="province" jdbcType="VARCHAR" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="town" property="town" jdbcType="VARCHAR" />
+        <result column="address_detail" property="addressDetail" jdbcType="VARCHAR" />
         <result column="birthday" property="birthday" jdbcType="VARCHAR" />
         <result column="id_card" property="idCard" jdbcType="VARCHAR" />
         <result column="contact_name" property="contactName" jdbcType="VARCHAR" />
@@ -20,8 +23,8 @@
 
 
 <insert id="addMessage">
-    INSERT  INTO driver_message (real_name, gender, nation,address,birthday,id_card, contact_name, contact_phone, relation, driver_id,phone)
-    VALUES (#{realName}, #{gender},#{nation},#{address},#{birthday},#{idCard},#{contactName},#{contactPhone},#{relation},#{driverId},#{phone})
+    INSERT  INTO driver_message (real_name, gender, nation,province, city, town,address_detail,birthday,id_card, contact_name, contact_phone, relation, driver_id,phone)
+    VALUES (#{realName}, #{gender},#{nation},#{province}, #{city}, #{town},#{addressDetail},#{birthday},#{idCard},#{contactName},#{contactPhone},#{relation},#{driverId},#{phone})
 </insert>
 
 <select id="selectPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
@@ -54,5 +57,74 @@
         </set>
         WHERE message_id = #{messageId,jdbcType=DECIMAL}
     </update>
+<update id="updateMessageById" parameterType="graduation.dto.DriverMessage">
+        UPDATE driver_message
+        <set>
+            message_status = #{messageStatus,jdbcType=VARCHAR}
+            <if test="realName!= null">
+                , real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="gender!= null">
+                , gender = #{gender,jdbcType=VARCHAR}
+            </if>
+            <if  test="nation!= null">
+                , nation = #{nation,jdbcType=VARCHAR}
+            </if>
+            <if  test="province!= null">
+                , province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if  test="city!= null">
+                , city = #{city,jdbcType=VARCHAR}
+            </if>
+            <if  test="town!= null">
+                , town = #{town,jdbcType=VARCHAR}
+            </if>
+            <if  test="addressDetail!= null">
+                , address_detail = #{addressDetail,jdbcType=VARCHAR}
+            </if>
+            <if  test="birthday!= null">
+                , birthday = #{birthday,jdbcType=VARCHAR}
+            </if>
+            <if  test="idCard!= null">
+                , id_card = #{idCard,jdbcType=VARCHAR}
+            </if>
+            <if  test="contactName!= null">
+                , contact_name = #{contactName,jdbcType=VARCHAR}
+            </if>
+            <if  test="contactPhone!= null">
+                , contact_phone = #{contactPhone,jdbcType=VARCHAR}
+            </if>
+            <if  test="phone!= null">
+                , phone = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if  test="relation!= null">
+                , relation = #{relation,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE message_id = #{messageId,jdbcType=DECIMAL}
+</update>
+
+    <select id="selectMessage" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+        SELECT * from
+        driver_message
+        <where>
+            <if test="address!= null">
+                and e.address  LIKE concat(concat("%", #{address,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="messageId!= null">
+                and e.message_id = #{messageId,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and e.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="messageStatus!= null">
+                and e.message_status = #{messageStatus,jdbcType=DECIMAL}
+            </if>
+            <if test="realName!= null">
+                and e.real_name LIKE concat(concat("%", #{realName,jdbcType=VARCHAR}), "%")
+            </if>
+        </where>
+</select>
+
 
 </mapper>

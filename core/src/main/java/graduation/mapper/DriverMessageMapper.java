@@ -19,4 +19,8 @@ public interface DriverMessageMapper extends Mapper<DriverMessage>{
     boolean setMessageStatus(DriverMessage driverMessage);
 
     List<DriverMessage> isAuthenticated(DriverMessage dto);
+
+    DriverMessage selectMessage(DriverMessage messageDto);
+
+    void updateMessageById(DriverMessage driverMessage);
 }

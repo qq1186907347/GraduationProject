@@ -1,0 +1,90 @@
+<#include "../include/header.html">
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+
+    });
+    $(function () {
+        //加载数据
+        var messageId =${RequestParameters.messageId!-1};
+    });
+
+    function addResult(){
+        var messageId =${RequestParameters.messageId!-1};
+        viewModel.model.set('messageId',messageId);
+        if(checkFrom()){
+            $.ajax({
+                url: '${base.contextPath}/refuse/result/add',
+                type: 'POST',
+                dataType: "json",
+                data:JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if(result.success){
+                        kendo.ui.showInfoDialog({
+                            title: $l('hap.tip.info'),
+                            message: "成功",
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.viewModel.refresh();
+                                    location.reload()
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                    window.parent.$("#unpass-window").data("kendoWindow").close();
+                                }
+                            }],
+                        });
+                    } else {
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message : result.message
+                        });
+                    }
+                }
+            });
+        }
+    }
+    //表单校验
+    function checkFrom() {
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+
+</script>
+<style>
+    .div {
+        margin: 0 auto;
+        width: 115rem;
+    }
+</style>
+<body>
+<div class="div" id="pageContext">
+    <div id="baseMessage">
+        <div class="col-md-12" style="font-size: 1.8rem;text-align: center">审核不通过理由</div>
+        <div class="col-md-12" style="font-size: 2rem">
+            <textarea  name="理由"required data-bind="value:model.refuseContent" id="refuseContent" class="k-textbox" maxlength="150" style="width: 100%;height: 15rem"></textarea>
+            <script>kendo.bind($('#refuseContent'), viewModel);</script>
+        </div>
+        <div class="col-md-12" style="text-align: center;margin-top: 1rem">
+                     <span class="btn btn-primary k-grid-add"
+                           onclick="addResult()"><i class="fa fa-arrow-circle-o-up" style="margin-right:3px;"></i>审核不通过</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

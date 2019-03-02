@@ -32,6 +32,7 @@ public class GoodsCollectController extends BaseController {
         //得到用户id
         Long userId = (Long) session.getAttribute("userId");
         dto.setUserId(userId);
+        dto.setCollectStatus(0L);
         return new ResponseData(service.selectCollect(dto));
     }
 
@@ -83,7 +84,13 @@ public class GoodsCollectController extends BaseController {
     @RequestMapping(value = "/goods/collect/remove")
     @ResponseBody
     public ResponseData delete(HttpServletRequest request, @RequestBody List<GoodsCollect> dto) {
-        service.batchDelete(dto);
-        return new ResponseData();
+        ResponseData responseData=new ResponseData();
+        try {
+            service.setCollectStatus(dto);
+        }catch (Exception e){
+            responseData.setSuccess(false);
+            throw e;
+        }
+        return  responseData;
     }
 }
