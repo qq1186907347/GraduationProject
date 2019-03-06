@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="graduation.dto.DriverCar">
         <result column="car_id" property="carId" jdbcType="DECIMAL"/>
         <result column="car_type" property="carType" jdbcType="VARCHAR"/>
+        <result column="car_brand" property="carBrand" jdbcType="VARCHAR"/>
         <result column="plate_number" property="plateNumber" jdbcType="VARCHAR"/>
         <result column="car_long" property="carLong" jdbcType="VARCHAR"/>
         <result column="car_height" property="carHeight" jdbcType="VARCHAR"/>
@@ -15,8 +16,8 @@
     </resultMap>
 
     <insert id="addCar">
-    INSERT  INTO driver_car (car_type,plate_number,car_long,car_height,car_wide,car_age,car_tonnage,driver_id)
-    VALUES (#{carType}, #{plateNumber}, #{carLong},#{carHeight}, #{carWide}, #{carAge}, #{carTonnage}, #{driverId})
+    INSERT  INTO driver_car (car_type,plate_number,car_long,car_height,car_wide,car_age,car_tonnage,driver_id,car_brand)
+    VALUES (#{carType}, #{plateNumber}, #{carLong},#{carHeight}, #{carWide}, #{carAge}, #{carTonnage}, #{driverId}, #{carBrand})
 </insert>
 
     <select id="selectCars" resultMap="BaseResultMap" parameterType="graduation.dto.DriverCar">

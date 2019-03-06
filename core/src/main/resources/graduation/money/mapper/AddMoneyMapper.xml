@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.money.mapper.AddMoneyMapper">
+    <resultMap id="BaseResultMap" type="graduation.money.dto.AddMoney">
+        <result column="add_id" property="addId" jdbcType="DECIMAL" />
+        <result column="money" property="money" jdbcType="FLOAT" />
+        <result column="user_id" property="userId" jdbcType="DECIMAL" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="remake" property="remake" jdbcType="VARCHAR" />
+        <result column="add_type" property="addType" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <select id="selectAddMoney" resultMap="BaseResultMap" parameterType="graduation.money.dto.AddMoney">
+        SELECT *
+        from
+        add_money t
+        <where>
+            1=1
+            <if test="addId!= null">
+                and t.add_id = #{addId,jdbcType=DECIMAL}
+            </if>
+            <if test="money!= null">
+                and t.money = #{money,jdbcType=FLOAT}
+            </if>
+            <if test="userId!= null">
+                and t.user_id = #{userId,jdbcType=DECIMAL}
+            </if>
+            <if test="addType!= null">
+                and t.add_type = #{addType,jdbcType=DECIMAL}
+            </if>
+            <if test="orderId!= null">
+                and t.order_id = #{orderId,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by t.add_id desc
+    </select>
+
+
+</mapper>

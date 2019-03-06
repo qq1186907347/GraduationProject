@@ -16,7 +16,7 @@
 
         var driverId =${RequestParameters.driverId!-1};
         Hap.loadViewModel({
-            url: "${base.contextPath}/driver/message/query/" + driverId,
+            url: "${base.contextPath}/driver/message/queryAdmin/"+driverId,
             model: viewModel.model
         });
     })
@@ -132,7 +132,7 @@
             <div class="col-md-4 div-out">
 
                 <input readonly="readonly" id="birthday" name="出生年月日"  placeholder="出生年月日，格式：1996-01-01" pattern="^((19[2-9]\d{1})|(20((0[0-9])|(1[0-8]))))\-((0?[1-9])|(1[0-2]))\-((0?[1-9])|([1-2][0-9])|30|31)$"
-                       data-role="maskedtextbox" type="text" style="width: 50%"
+                       data-role="maskedtextbox" type="text"
                        required data-bind="value:model.birthday" class="font-input k-textbox" />
             </div>
             <script>kendo.bind($('#birthday'), viewModel);</script>
@@ -160,7 +160,7 @@
         <div class="row div-out">
             <div class="col-md-1 font-p">家庭住址</div>
             <div class="col-md-8">
-                <div class="col-md-6 line-style">
+                <div class="col-md-5 line-style">
                     <div class="col-md-4">
                     <input  readonly="readonly" class=" k-textbox k-valid" id="province" required  name="province" data-bind="value:model.province">
                     <script>kendo.bind($('#province'), viewModel);</script>
@@ -175,8 +175,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 line-style">
-                    <span>详细地址</span><input readonly="readonly" id="addressDetail" name="详细地址" style="width: 70%;margin-left: 1rem" required type="text"
+                <div class="col-md-7 line-style">
+                    <input readonly="readonly" id="addressDetail" name="详细地址" style="width: 70%;margin-left: 1rem" required type="text"
                                             class=" k-textbox k-valid" data-bind="value:model.addressDetail">
                     <script>kendo.bind($('#addressDetail'), viewModel);</script>
                 </div>
@@ -205,7 +205,7 @@
             <script>kendo.bind($('#relation'), viewModel);</script>
         </div>
 
-        <span class="btn btn-success k-grid-add"
+        <span class="btn btn-success k-grid-add" style="margin-top: 2rem"
               onclick="openDriverWindow()"><i class="fa fa-arrow-circle-o-up" style="margin-right:3px;"></i> 司机认证信息</span>
 
         <!--车辆信息-start-->
@@ -223,9 +223,7 @@
                   onclick="openCarWindow()"><i class="fa fa-arrow-circle-o-up" style="margin-right:3px;"></i> 车辆认证信息</span>
             <div class="row div-out" style="padding-top: 2rem">
                 <div class="col-md-4"></div>
-                <div class="col-md-4">
-            <span class="btn  btn-primary">
-                <i class="fa fa-arrow-circle-o-up"></i> 审核中.....</span></div>
+                <div class="col-md-4"></div>
                 <div class="col-md-4"></div>
             </div>
             <div id="driver-window"></div>
@@ -368,6 +366,11 @@
                         {
                             field: "plateNumber",
                             title: '车牌',
+                            width: 120
+                        },
+                        {
+                            field: "carBrand",
+                            title: '品牌',
                             width: 120
                         },
                         {

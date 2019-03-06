@@ -1,0 +1,171 @@
+<#include "../include/header.html">
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+<script src="${base.contextPath}/common/code?creditDriver=CREDIT_DRIVER" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+    });
+    //加载数据
+    $(function () {
+        $("#num").kendoDropDownList({
+            dataTextField: "meaning",
+            dataValueField: "value",
+            dataSource: creditDriver,
+            change: function () {
+                viewModel.model.set('num', this.value());
+            }
+        });
+    });
+
+    function creditExchange() {
+        if (checkFrom()) {
+            var num=viewModel.model.get('num');
+            if(num>0){
+                $.ajax({
+                    url: '${base.contextPath}/credit/driver/creditExchange',
+                    type: 'POST',
+                    dataType: "json",
+                    data: JSON.stringify(viewModel.model),
+                    contentType: "application/json",
+                    success: function (result) {
+                        if (result.success) {
+                            kendo.ui.showInfoDialog({
+                                title: $l('hap.tip.info'),
+                                message: "兑换成功",
+                                buttons: [{
+                                    text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                    type: 'primary',
+                                    click: function (e) {
+                                        window.parent.$("#dComplain-window").data("kendoWindow").close();
+                                        e.dialog.destroy();
+                                        e.deferred.resolve({ button: 'OK' });
+                                    }
+                                }],
+                            });
+                            // close this window
+                            window.parent.$("#register-window").data("kendoWindow").close();
+                        } else {
+                            kendo.ui.showErrorDialog({
+                                title: $l('hap.error'),
+                                message: "积分不足,余额："+result.message
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    //表单校验
+    function checkFrom() {
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+    //检验积分
+    function checkCredit() {
+        var credit=$("#num").val();
+        viewModel.model.set('num',credit);
+        if(credit>0){
+            $.ajax({
+                url: '${base.contextPath}/credit/driver/getCredit',
+                type: 'POST',
+                dataType: "json",
+                data: JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.success) {
+                        viewModel.model.set('num',credit);
+                    } else {
+                        //初始化下拉框
+                        var color = $("#num").data("kendoDropDownList");
+                        viewModel.model.set('num',null);
+                        color.select(0); // 设置初始化时选中项，索引从0开始。
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message: "积分不足，请多跑单,您的积分余额："+result.message,
+                        });
+                    }
+                }
+            });
+        }
+    }
+</script>
+<style>
+    .div {
+        margin: 0 auto;
+        width: 50rem;
+    }
+
+    .tab-p {
+        text-align: center;
+        font-size: 2rem;
+        margin: 0.7rem;
+        font-family: "Arial Black", arial-black;
+        font-weight: bold;
+    }
+
+    .div-out {
+
+    }
+
+    .font-p {
+        margin-top: 1rem;
+        height: 3rem;
+        color: black;
+        font-size: 1.4rem;
+
+    }
+
+    .font-input {
+        margin-top: 1rem;
+        height: 3rem;
+        width: 100%;
+    }
+
+    .star {
+        padding-right: 1rem;
+        color: red;
+    }
+
+</style>
+<body>
+<div class="div" id="pageContext">
+    <div id="baseMessage">
+        <!---start-->
+        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#199ed8;border-radius:0.5rem;">
+            <div class="col-md-12 tab-p">积分兑换</div>
+        </div>
+
+
+        <div class="row div-out">
+            <div class="col-md-5 font-p">
+                <span class="star">*</span>积分
+            </div>
+            <div class="col-md-5 ">
+                <input id="num" name="积分" required type="text" class=" k-valid font-input "
+                   onchange="checkCredit()"    data-bind="value:model.num">
+            </div>
+            <script>kendo.bind($('#num'), viewModel);</script>
+        </div>
+        <div class="row div-out" style="margin-top: 5rem">
+            <div class="col-md-12 font-p" style="text-align: center">
+                <span class="btn btn-primary k-grid-add" onclick="creditExchange()"><i class="fa fa-plus-square"></i>兑换</span>
+            </div>
+            <div id="attachment-window"></div>
+        </div>
+    </div>
+    <!---end-->
+</div>
+</body>
+</html>

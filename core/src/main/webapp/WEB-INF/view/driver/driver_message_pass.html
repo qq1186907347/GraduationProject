@@ -4,15 +4,9 @@
 </script>
 <body>
 <div id="page-content">
-    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="selectItem()">审核通过</span>
-        <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
-        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
-    </div>
-    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-        <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "DriverMessage.contactName"/>'
-               data-bind="value:model.contactName" class="k-textbox">
+        <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='姓名'
+               data-bind="value:model.realName" class="k-textbox">
         <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
         <div style="clear:both"></div>
     </div>
@@ -22,6 +16,16 @@
     </div>
 </div>
 <script>
+    //认证窗口
+    function openAuthenticateWindow(driverId) {
+        var url = "${base.contextPath}/driver/driver_real_name_detail.html?driverId="+driverId;
+        Hap.createWindow('#authenticate-window',{
+            width: '95%',
+            height: '95%',
+            title: '司机实名认证',
+            url: url
+        }).center().open();
+    }
     //司机实名认证
     function openDriverWindow() {
         //初始化司机实名认证window
@@ -39,7 +43,7 @@
         win.center().open();
     }
     //车辆实名认证
-    function openCarWindow() {
+    function openCarWindow(driverId) {
         //初始化车辆实名认证window
         $("#car-window").kendoWindow({
             width: "800px",
@@ -51,7 +55,7 @@
             iframe:true
         });
         var win = $("#car-window").data("kendoWindow");
-        win.refresh('car_attachment2.html?driverId=' + 1);
+        win.refresh('car_attachment2.html?driverId=' + driverId);
         win.center().open();
     }
     //选择审核
@@ -179,9 +183,20 @@
                 width: 120
             },
             {
-                field: "address",
-                title: '家庭地址',
-                width: 120
+                title:'家庭地址',
+                width : 350,
+                headerAttributes: {
+                    style : "text-align: center"
+                },
+                attributes: {style: "text-align:center"},
+                template : function (rowdata) {
+                    console.log(1);
+                    if (rowdata.province) {
+                        //console.log(myString);
+                        return '<input readonly="readonly" type="text" style="border-width: 0rem;width: 100%" value="'+rowdata.province+rowdata.city+rowdata.town+rowdata.addressDetail+'">'
+                    } else return ''
+                },
+                sortable: false
             },
             {
                 field: "birthday",
@@ -191,22 +206,25 @@
             {
                 field: "idCard",
                 title: '身份证号码',
-                width: 120
+                width: 150
             },
             {
-                field: "contactName",
-                title: '联系人姓名',
-                width: 120
-            },
-            {
-                field: "contactPhone",
-                title: '联系人电话',
-                width: 120
-            },
-            {
-                field: "relation",
-                title: '与联系人关系',
-                width: 120
+                title:'详细资料',
+                width : 90,
+                headerAttributes: {
+                    style : "text-align: center"
+                },
+                attributes: {style: "text-align:center"},
+                template : function (rowdata) {
+                    console.log(1);
+                    if (rowdata.driverId) {
+                        //把数据都转化成字符串
+                        var myString="openAuthenticateWindow('"+rowdata.driverId+"')";
+                        //console.log(myString);
+                        return '<a href="#" onclick='+myString+'> 详细资料</a>'
+                    } else return ''
+                },
+                sortable: false
             },
             {
                 title:'司机认证资料',
@@ -237,7 +255,7 @@
                     console.log(1);
                     if (rowdata.messageId) {
                         //把数据都转化成字符串
-                        var myString="openCarWindow('"+rowdata.messageId+"')";
+                        var myString="openCarWindow('"+rowdata.driverId+"')";
                         //console.log(myString);
                         return '<a href="#" onclick='+myString+'> 车辆认证资料</a>'
                     } else return ''
@@ -245,10 +263,11 @@
                 sortable: false
             },
         ],
-        editable: true
+        editable: false
     });
 
 </script>
+<div id="authenticate-window"></div>
 <div id="driver-window"></div>
 <div id="car-window"></div>
 </body>

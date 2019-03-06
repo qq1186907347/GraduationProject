@@ -41,6 +41,9 @@ public class User2Controller extends BaseController {
         ResponseData responseData=new ResponseData();
         //得到用户id
         Long userId = (Long) session.getAttribute("userId");
+        if(userId==null){
+            userId=-101L;
+        }
         dto.setUserId(userId);
         List<User2> user2List=service.selectUser(dto);
         if(user2List.size()>0){

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.mapper.CarRepairMapper">
+    <resultMap id="BaseResultMap" type="graduation.dto.CarRepair">
+        <result column="repair_id" property="repairId" jdbcType="DECIMAL" />
+        <result column="repair_time" property="repairTime" jdbcType="VARCHAR" />
+        <result column="repair_content" property="repairContent" jdbcType="VARCHAR" />
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL" />
+        <result column="repair_company" property="repairCompany" jdbcType="VARCHAR" />
+        <result column="plate_number" property="plateNumber" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <select id="selectCarRepair" resultMap="BaseResultMap" parameterType="graduation.dto.CarRepair">
+        SELECT * from
+        car_repair e
+        <where>
+            1=1
+            <if test="repairId!= null">
+                and e.repair_id = #{repairId,jdbcType=DECIMAL}
+            </if>
+            <if test="repairContent!= null">
+                and e.repair_content  LIKE concat(concat("%", #{repairContent,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="driverId!= null">
+                and e.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="plateNumber!= null">
+                and e.repair_company LIKE concat(concat("%", #{plateNumber,jdbcType=VARCHAR}), "%")
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

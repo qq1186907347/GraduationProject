@@ -55,8 +55,9 @@ body classes:
                     $("#userlr").attr('style', 'display:none');
                     $("#userlr2").removeAttr("style");
                     isAuthenticated()
-
                 } else {
+                    $("#index_driver").attr('style', 'display:none');
+                    $("#realNameAuthentication").attr('style', 'display:none');
                     kendo.ui.showErrorDialog({
                         title: $l('hap.error'),
                         message: result.message
@@ -80,6 +81,7 @@ body classes:
             success: function (result) {
                 if (result.success) {
                     $("#realNameAuthentication").attr('style', 'display:none');
+                    viewModel.model.set('driverId',result.total);
                 } else {
                     viewModel.model.set('driverId',result.total);
                     kendo.ui.showErrorDialog({
@@ -140,8 +142,7 @@ body classes:
                             text: kendo.ui.Widget.prototype.options.messages['ok'],
                             type: 'primary',
                             click: function (e) {
-                                $("#userlr2").attr('style', 'display:none');
-                                $("#userlr").removeAttr("style");
+                                window.location.href="${base.contextPath}/home/index_driver.html";
                                 e.dialog.destroy();
                                 e.deferred.resolve({button: 'OK'});
                             }
@@ -153,7 +154,7 @@ body classes:
         });
     }
 
-    //认证窗口
+    //实名认证
     function openAuthenticateWindow() {
         var driverId=viewModel.model.get("driverId");
         var url = "${base.contextPath}/driver/driver_real_name.html?driverId="+driverId;
@@ -167,7 +168,7 @@ body classes:
     //认证窗口
     function openAuthenticateWindow2() {
         var driverId=viewModel.model.get("driverId");
-        var url = "${base.contextPath}/driver/driver_real_name2.html?driverId="+driverId;
+        var url = "${base.contextPath}/driver/driver_real_name_wait.html?driverId="+driverId;
         Hap.createWindow('#authenticate-window',{
             width: '90%',
             height: '90%',
@@ -188,6 +189,161 @@ body classes:
         }).center().open();
     }
 
+    //已完成订单窗口
+    function openOrderFinishWindow() {
+        var url = "${base.contextPath}/order/driver_order_finish.html";
+        Hap.createWindow('#orderFinish-window', {
+            width: '80%',
+            height: '80%',
+            title: '已完成订单',
+            url: url
+        }).center().open();
+    }
+    //拒绝付款订单窗口
+    function openOrderRefuseWindow() {
+        var url = "${base.contextPath}/order/driver_order_refuse.html";
+        Hap.createWindow('#orderRefuse-window', {
+            width: '80%',
+            height: '80%',
+            title: '拒绝付款订单',
+            url: url
+        }).center().open();
+    }
+
+    //待确认订单窗口
+    function openDriverOrderWindow() {
+        var url = "${base.contextPath}/order/driver_order_wait.html";
+        Hap.createWindow('#userOrder-window', {
+            width: '80%',
+            height: '80%',
+            title: '待确认订单',
+            url: url
+        }).center().open();
+    }
+
+    //我对顾客评价窗口
+    function openUEvaluateWindow() {
+        var url = "${base.contextPath}/evaluate/user_evaluate_driver.html";
+        Hap.createWindow('#uEvaluate-window', {
+            width: '80%',
+            height: '80%',
+            title: '我的评价',
+            url: url
+        }).center().open();
+    }
+
+    //顾客对我评价窗口
+    function openDEvaluateWindow() {
+        var url = "${base.contextPath}/evaluate/driver_evaluate_driver.html";
+        Hap.createWindow('#dEvaluate-window', {
+            width: '80%',
+            height: '80%',
+            title: '我的评价',
+            url: url
+        }).center().open();
+    }
+    //认证窗口
+    function openAuthenticateWindow4() {
+        var driverId=viewModel.model.get("driverId");
+        var url = "${base.contextPath}/driver/driver_real_name_detail.html?driverId="+driverId;
+        Hap.createWindow('#authenticate-window',{
+            width: '95%',
+            height: '95%',
+            title: '司机实名认证',
+            url: url
+        }).center().open();
+    }
+
+    //我的投诉
+    function openDComplainWindow() {
+        var url = "${base.contextPath}/home/user_complain_driver.html";
+        Hap.createWindow('#dComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '我的投诉',
+            url: url
+        }).center().open();
+    }
+    //积分流水
+    function openCreditDriverWindow() {
+        var url = "${base.contextPath}/credit/credit_driver.html";
+        Hap.createWindow('#dComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '积分流水',
+            url: url
+        }).center().open();
+    }
+    //余额流水
+    function openBDriverWindow() {
+        var url = "${base.contextPath}/money/balance_driver.html";
+        Hap.createWindow('#dComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '余额流水',
+            url: url
+        }).center().open();
+    }
+
+    //积分兑换
+    function openCreditExchangeWindow() {
+        var url = "${base.contextPath}/credit/credit_exchange.html";
+        Hap.createWindow('#dComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '积分兑换',
+            url: url
+        }).center().open();
+    }
+
+    //汽车大修记录
+    function openRepairWindow() {
+        var url = "${base.contextPath}/driver/car_repair.html";
+        Hap.createWindow('#dComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '汽车大修',
+            url: url
+        }).center().open();
+    }
+
+    //查询积分
+    function getCredit() {
+        $.ajax({
+            url: '${base.contextPath}/credit/driver/getCredit',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    kendo.ui.showErrorDialog({
+                        title: "积分",
+                        message: result.message+"分"
+                    });
+                }
+            }
+        });
+    }
+
+    //查询积分
+    function getBalance() {
+        $.ajax({
+            url: '${base.contextPath}/balance/driver/getBalance',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    kendo.ui.showErrorDialog({
+                        title: "余额",
+                        message: result.message+"元"
+                    });
+                }
+            }
+        });
+    }
 
 </script>
 <body class="front">
@@ -237,7 +393,12 @@ body classes:
                             <div id="login-window"></div>
                             <div id="register-window"></div>
                             <div id="authenticate-window"></div>
-
+                            <div id="orderFinish-window"></div>
+                            <div id="orderRefuse-window"></div>
+                            <div id="userOrder-window"></div>
+                            <div id="uEvaluate-window"></div>
+                            <div id="dEvaluate-window"></div>
+                            <div id="dComplain-window"></div>
                         </div>
                         <!--							<script>kendo.bind($('#userlr'), viewModel);</script>
                                                     <script>kendo.bind($('#login-window'), viewModel);</script>
@@ -300,6 +461,7 @@ body classes:
                                         </button>
                                     </div>
 
+                                    <div id="index_driver">
                                     <!-- Collect the nav links, forms, and other content for toggling -->
                                     <div class="collapse navbar-collapse" id="navbar-collapse-1">
                                         <ul class="nav navbar-nav navbar-right">
@@ -307,112 +469,18 @@ body classes:
                                                 <a href="index_driver.html" class="dropdown-toggle"
                                                    data-toggle="dropdown">首页</a>
                                             </li>
-                                            <!-- mega-menu start -->
-                                            <li class="dropdown mega-menu">
-                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pages</a>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <div class="row">
-                                                            <div class="col-lg-4 col-md-3 hidden-sm">
-                                                                <h4>Premium HTML5 Template</h4>
-                                                                <p>iDea is perfectly suitable for corporate, business
-                                                                    and company webpages.</p>
-                                                                <img src="${base.contextPath}/resources/images/section-image-3.png"
-                                                                     alt="iDea">
-                                                            </div>
-                                                            <div class="col-lg-8 col-md-9">
-                                                                <h4>Pages</h4>
-                                                                <div class="row">
-                                                                    <div class="col-sm-4">
-                                                                        <div class="divider"></div>
-                                                                        <ul class="menu">
-                                                                            <li><a href="page-about.html"><i
-                                                                                    class="icon-right-open"></i>About Us</a>
-                                                                            </li>
-                                                                            <li><a href="page-about-2.html"><i
-                                                                                    class="icon-right-open"></i>About Us
-                                                                                2</a></li>
-                                                                            <li><a href="page-about-3.html"><i
-                                                                                    class="icon-right-open"></i>About Us
-                                                                                3</a></li>
-                                                                            <li><a href="page-about-me.html"><i
-                                                                                    class="icon-right-open"></i>About Me</a>
-                                                                            </li>
-                                                                            <li><a href="page-team.html"><i
-                                                                                    class="icon-right-open"></i>Our Team
-                                                                                - Options</a></li>
-                                                                            <li><a href="page-services.html"><i
-                                                                                    class="icon-right-open"></i>Services</a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="divider"></div>
-                                                                        <ul class="menu">
-                                                                            <li><a href="page-contact.html"><i
-                                                                                    class="icon-right-open"></i>Contact</a>
-                                                                            </li>
-                                                                            <li><a href="page-contact-2.html"><i
-                                                                                    class="icon-right-open"></i>Contact
-                                                                                2</a></li>
-                                                                            <li><a href="page-coming-soon.html"><i
-                                                                                    class="icon-right-open"></i>Coming
-                                                                                Soon Page</a></li>
-                                                                            <li><a href="page-404.html"><i
-                                                                                    class="icon-right-open"></i>404
-                                                                                error</a></li>
-                                                                            <li><a href="page-faq.html"><i
-                                                                                    class="icon-right-open"></i>FAQ page</a>
-                                                                            </li>
-                                                                            <li><a href="page-affix-sidebar.html"><i
-                                                                                    class="icon-right-open"></i>Sidebar
-                                                                                - Affix Menu</a></li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="divider"></div>
-                                                                        <ul class="menu">
-                                                                            <li><a href="page-left-sidebar.html"><i
-                                                                                    class="icon-right-open"></i>Left
-                                                                                Sidebar</a></li>
-                                                                            <li><a href="page-right-sidebar.html"><i
-                                                                                    class="icon-right-open"></i>Right
-                                                                                Sidebar</a></li>
-                                                                            <li><a href="page-two-sidebars.html"><i
-                                                                                    class="icon-right-open"></i>Two
-                                                                                Sidebars</a></li>
-                                                                            <li><a href="page-no-sidebar.html"><i
-                                                                                    class="icon-right-open"></i>No
-                                                                                Sidebars</a></li>
-                                                                            <li><a href="page-sitemap.html"><i
-                                                                                    class="icon-right-open"></i>Sitemap</a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <!-- mega-menu end -->
                                             <li class="dropdown">
-                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features</a>
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">我的</a>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="features-typography.html">Typography</a></li>
                                                     <li class="dropdown">
-                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pricing
-                                                            tables</a>
+                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">订单管理</a>
                                                         <ul class="dropdown-menu">
-                                                            <li><a href="features-pricing-tables-1.html">Pricing Tables
-                                                                1</a></li>
-                                                            <li><a href="features-pricing-tables-2.html">Pricing Tables
-                                                                2</a></li>
-                                                            <li><a href="features-pricing-tables-3.html">Pricing Tables
-                                                                3</a></li>
+                                                            <li><a href="#" onclick="openDriverOrderWindow()">待确认订单</a></li>
+                                                            <li><a href="#" onclick="openOrderRefuseWindow()">拒绝付款订单</a></li>
+                                                            <li><a href="#" onclick="openOrderFinishWindow()">已经完成订单</a></li>
                                                         </ul>
                                                     </li>
-                                                    <li><a href="features-backgrounds.html">Backgrounds</a></li>
+                                                    <li><a href="#" onclick="openAuthenticateWindow4()">我的实名认证</a></li>
                                                     <li><a href="features-testimonials.html">Testimonials</a></li>
                                                     <li class="dropdown">
                                                         <a href="#" class="dropdown-toggle"
@@ -455,178 +523,57 @@ body classes:
                                                     <li><a href="features-grid.html">Grid System</a></li>
                                                 </ul>
                                             </li>
-                                            <!-- mega-menu start -->
-                                            <li class="dropdown mega-menu">
+                                            <!--start-->
+                                            <li class="dropdown">
                                                 <a href="#" class="dropdown-toggle"
-                                                   data-toggle="dropdown">Components</a>
+                                                   data-toggle="dropdown">积分</a>
                                                 <ul class="dropdown-menu">
-                                                    <li>
-                                                        <div class="row">
-                                                            <div class="col-sm-4 col-md-6">
-                                                                <h4>iDea - Powerful Bootstrap Theme</h4>
-                                                                <p>iDea is a Clean and Super Flexible Bootstrap Theme
-                                                                    with many Features and Unlimited options.</p>
-                                                                <img src="${base.contextPath}/resources/images/section-image-1.png"
-                                                                     alt="image-1">
-                                                            </div>
-                                                            <div class="col-sm-8 col-md-6">
-                                                                <h4>Components</h4>
-                                                                <div class="row">
-                                                                    <div class="col-sm-6">
-                                                                        <div class="divider"></div>
-                                                                        <ul class="menu">
-                                                                            <li>
-                                                                                <a href="components-tabs-and-pills.html"><i
-                                                                                        class="icon-right-open"></i>Tabs
-                                                                                    &amp; Pills</a></li>
-                                                                            <li><a href="components-accordions.html"><i
-                                                                                    class="icon-right-open"></i>Accordions</a>
-                                                                            </li>
-                                                                            <li>
-                                                                                <a href="components-social-icons.html"><i
-                                                                                        class="icon-right-open"></i>Social
-                                                                                    Icons</a></li>
-                                                                            <li><a href="components-buttons.html"><i
-                                                                                    class="icon-right-open"></i>Buttons</a>
-                                                                            </li>
-                                                                            <li><a href="components-forms.html"><i
-                                                                                    class="icon-right-open"></i>Forms</a>
-                                                                            </li>
-                                                                            <li><a href="components-progress-bars.html"><i
-                                                                                    class="icon-right-open"></i>Progress
-                                                                                bars</a></li>
-                                                                            <li>
-                                                                                <a href="components-alerts-and-callouts.html"><i
-                                                                                        class="icon-right-open"></i>Alerts
-                                                                                    &amp; Callouts</a></li>
-                                                                            <li>
-                                                                                <a href="components-content-sliders.html"><i
-                                                                                        class="icon-right-open"></i>Content
-                                                                                    Sliders</a></li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="divider"></div>
-                                                                        <ul class="menu">
-                                                                            <li><a href="components-lightbox.html"><i
-                                                                                    class="icon-right-open"></i>Lightbox</a>
-                                                                            </li>
-                                                                            <li><a href="components-icon-boxes.html"><i
-                                                                                    class="icon-right-open"></i>Icon
-                                                                                Boxes</a></li>
-                                                                            <li><a href="components-image-boxes.html"><i
-                                                                                    class="icon-right-open"></i>Image
-                                                                                Boxes</a></li>
-                                                                            <li>
-                                                                                <a href="components-video-and-audio.html"><i
-                                                                                        class="icon-right-open"></i>Video
-                                                                                    &amp; Audio</a></li>
-                                                                            <li><a href="components-modals.html"><i
-                                                                                    class="icon-right-open"></i>Modals</a>
-                                                                            </li>
-                                                                            <li><a href="components-animations.html"><i
-                                                                                    class="icon-right-open"></i>Animations</a>
-                                                                            </li>
-                                                                            <li><a href="components-counters.html"><i
-                                                                                    class="icon-right-open"></i>Counters</a>
-                                                                            </li>
-                                                                            <li><a href="components-tables.html"><i
-                                                                                    class="icon-right-open"></i>Tables</a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <li><a href="#" onclick="openCreditDriverWindow()">积分流水</a></li>
+                                                    <li><a href="#" onclick="getCredit()">积分余额</a></li>
+                                                    <li><a href="#" onclick="openCreditExchangeWindow()">积分兑换</a></li>
+                                                </ul>
+                                            </li>
+                                            <!--end-->
+                                            <!-- mega-menu start -->
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle"
+                                                   data-toggle="dropdown">评价管理</a>
+                                                <ul class="dropdown-menu">
+                                                    <li class="dropdown">
+                                                        <a href="#" class="dropdown-toggle"
+                                                           data-toggle="dropdown">我的评价</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="#" onclick="openUEvaluateWindow()">我对顾客的评价</a>
+                                                            </li>
+                                                            <li><a href="#" onclick="openDEvaluateWindow()">顾客对我的评价</a>
+                                                            </li>
+                                                        </ul>
                                                     </li>
                                                 </ul>
                                             </li>
                                             <!-- mega-menu end -->
+
                                             <li class="dropdown">
-                                                <a href="portfolio-3col.html" class="dropdown-toggle"
-                                                   data-toggle="dropdown">Portfolio</a>
+                                                <a href="#" class="dropdown-toggle"
+                                                   data-toggle="dropdown" onclick="openDComplainWindow()">我的投诉</a>
+                                            </li>
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle"
+                                                   data-toggle="dropdown">余额管理</a>
                                                 <ul class="dropdown-menu">
-                                                    <li class="dropdown">
-                                                        <a href="portfolio-3col.html" class="dropdown-toggle"
-                                                           data-toggle="dropdown">Portfolio - Style 1</a>
-                                                        <ul class="dropdown-menu">
-                                                            <li><a href="portfolio-2col.html">Portfolio - 2 columns</a>
-                                                            </li>
-                                                            <li><a href="portfolio-3col.html">Portfolio - 3 columns</a>
-                                                            </li>
-                                                            <li><a href="portfolio-4col.html">Portfolio - 4 columns</a>
-                                                            </li>
-                                                            <li><a href="portfolio-sidebar.html">Portfolio - With
-                                                                sidebar</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="dropdown">
-                                                        <a href="portfolio-3col-2.html" class="dropdown-toggle"
-                                                           data-toggle="dropdown">Portfolio - Style 2</a>
-                                                        <ul class="dropdown-menu">
-                                                            <li><a href="portfolio-2col-2.html">Portfolio - 2
-                                                                columns</a></li>
-                                                            <li><a href="portfolio-3col-2.html">Portfolio - 3
-                                                                columns</a></li>
-                                                            <li><a href="portfolio-4col-2.html">Portfolio - 4
-                                                                columns</a></li>
-                                                            <li><a href="portfolio-sidebar-2.html">Portfolio - With
-                                                                sidebar</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="dropdown">
-                                                        <a href="portfolio-3col-3.html" class="dropdown-toggle"
-                                                           data-toggle="dropdown">Portfolio - Style 3</a>
-                                                        <ul class="dropdown-menu">
-                                                            <li><a href="portfolio-2col-3.html">Portfolio - 2
-                                                                columns</a></li>
-                                                            <li><a href="portfolio-3col-3.html">Portfolio - 3
-                                                                columns</a></li>
-                                                            <li><a href="portfolio-4col-3.html">Portfolio - 4
-                                                                columns</a></li>
-                                                            <li><a href="portfolio-sidebar-3.html">Portfolio - With
-                                                                sidebar</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li><a href="portfolio-full.html">Portfolio - Full width</a></li>
-                                                    <li><a href="portfolio-item.html">Portfolio single</a></li>
-                                                    <li><a href="portfolio-item-2.html">Portfolio single 2</a></li>
-                                                    <li><a href="portfolio-item-3.html">Portfolio single 3</a></li>
+                                                    <li><a href="#" onclick="openBDriverWindow()">余额流水</a></li>
+                                                    <li><a href="#" onclick="getBalance()">我的余额</a></li>
+                                                    <li><a href="#">提现</a></li>
                                                 </ul>
                                             </li>
                                             <li class="dropdown">
-                                                <a href="shop-listing-3col.html" class="dropdown-toggle"
-                                                   data-toggle="dropdown">Shop</a>
-                                                <ul class="dropdown-menu">
-                                                    <li><a href="shop-listing-3col.html">Shop - 3 Columns</a></li>
-                                                    <li><a href="shop-listing-4col.html">Shop - 4 Columns</a></li>
-                                                    <li><a href="shop-listing-sidebar.html">Shop - With Sidebar</a></li>
-                                                    <li><a href="shop-product.html">Product</a></li>
-                                                    <li><a href="shop-cart.html">Shopping Cart</a></li>
-                                                    <li><a href="shop-checkout.html">Checkout Page - Step 1</a></li>
-                                                    <li><a href="shop-checkout-payment.html">Checkout Page - Step 2</a>
-                                                    </li>
-                                                    <li><a href="shop-checkout-review.html">Checkout Page - Step 3</a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li class="dropdown">
-                                                <a href="blog-right-sidebar.html" class="dropdown-toggle"
-                                                   data-toggle="dropdown">Blog</a>
-                                                <ul class="dropdown-menu">
-                                                    <li><a href="blog-right-sidebar.html">Blog Right Sidebar</a></li>
-                                                    <li><a href="blog-left-sidebar.html">Blog Left Sidebar</a></li>
-                                                    <li><a href="blog-no-sidebar.html">Blog No Sidebars</a></li>
-                                                    <li><a href="blog-masonry.html">Blog Masonry</a></li>
-                                                    <li><a href="blog-masonry-sidebar.html">Blog Masonry - Sidebar</a>
-                                                    </li>
-                                                    <li><a href="blog-timeline.html">Blog Timeline</a></li>
-                                                    <li><a href="blog-post.html">Blog post</a></li>
-                                                </ul>
+                                                <a href="#" class="dropdown-toggle"
+                                                   data-toggle="dropdown" onclick="openRepairWindow()">汽车大修记录管理</a>
+
                                             </li>
                                         </ul>
                                     </div>
-
+                                    </div>
                                 </div>
                             </nav>
                             <!-- navbar end -->
@@ -1044,11 +991,11 @@ body classes:
                             </div>
                             <div class="collapse navbar-collapse" id="navbar-collapse-2">
                                 <ul class="nav navbar-nav">
-                                    <li><a href="index_driver.html">Home</a></li>
-                                    <li><a href="page-about.html">About</a></li>
-                                    <li><a href="blog-right-sidebar.html">Blog</a></li>
-                                    <li><a href="portfolio-3col.html">Portfolio</a></li>
-                                    <li><a href="page-contact.html">Contact</a></li>
+                                    <li><a href="#">Home</a></li>
+                                    <li><a href="#">About</a></li>
+                                    <li><a href="#">Blog</a></li>
+                                    <li><a href="#">Portfolio</a></li>
+                                    <li><a href="#">Contact</a></li>
                                 </ul>
                             </div>
                         </nav>

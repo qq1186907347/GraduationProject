@@ -14,5 +14,5 @@ public interface IUserOrderService extends IBaseService<UserOrder>, ProxySelf<IU
 
     void updateOrder(UserOrder dto);
 
-    void addOrder(UserOrder dto, Long startAddressId);
+    void addOrder(IRequest requestContext, UserOrder dto, Long startAddressId) throws Exception;
 }

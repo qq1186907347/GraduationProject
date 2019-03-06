@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.money.mapper.BalanceDriverMapper">
+    <resultMap id="BaseResultMap" type="graduation.money.dto.BalanceDriver">
+        <result column="bd_id" property="bdId" jdbcType="DECIMAL" />
+        <result column="money" property="money" jdbcType="FLOAT" />
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="DECIMAL" />
+    </resultMap>
+
+
+    <select id="selectDriverBalance" resultMap="BaseResultMap" parameterType="graduation.money.dto.BalanceDriver">
+        SELECT *
+        from
+        balance_driver t
+        <where>
+            1=1
+            <if test="bdId!= null">
+                and t.bd_id = #{bdId,jdbcType=DECIMAL}
+            </if>
+            <if test="money!= null">
+                and t.money = #{money,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and t.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="type!= null">
+                and t.type = #{type,jdbcType=DECIMAL}
+            </if>
+            <if test="orderId!= null">
+                and t.order_id = #{orderId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+</mapper>

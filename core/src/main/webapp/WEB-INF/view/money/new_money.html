@@ -1,0 +1,154 @@
+<#include "../include/header.html">
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+    });
+
+    function addMoney(){
+        if(checkFrom()){
+            $.ajax({
+                url: '${base.contextPath}/add/money/add',
+                type: 'POST',
+                dataType: "json",
+                data:JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if(result.success){
+                        kendo.ui.showInfoDialog({
+                            title: $l('hap.tip.info'),
+                            message: "提交成功",
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.$("#newMoney-window").data("kendoWindow").close();
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
+                        });
+                        // close this window
+                        window.parent.$("#register-window").data("kendoWindow").close();
+                    } else {
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message : result.message
+                        });
+                    }
+                }
+            });
+        }
+    }
+    //表单校验
+    function checkFrom() {
+        if($("#password").val()!=$("#password1").val()){
+            kendo.ui.showErrorDialog({
+                title: $l('hap.error'),
+                message : "2次密码不一样"
+            });
+            return false;
+        }
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+
+</script>
+<style>
+    .div{
+        margin:0 auto;
+        width:50rem;
+    }
+    .tab-p {
+        text-align: center;
+        font-size: 2rem;
+        margin: 0.7rem;
+        font-family: "Arial Black", arial-black;
+        font-weight: bold;
+    }
+    .div-out {
+
+    }
+
+    .font-p {
+        margin-top: 1rem;
+        height:3rem;
+        color: black;
+        font-size: 1.4rem;
+
+    }
+
+    .font-input {
+        margin-top: 1rem;
+        height: 3rem;
+        width: 100%;
+    }
+    .star{
+        padding-right: 1rem;
+        color: red;
+    }
+
+</style>
+<body>
+<div class="div" id="pageContext">
+    <div id="baseMessage">
+        <!--注册-start-->
+        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#199ed8;border-radius:0.5rem;">
+            <div class="col-md-12 tab-p">充值页面</div>
+        </div>
+
+        <div class="row div-out" >
+            <div class="col-md-12"  style="border: solid #c0cddc 0.1rem">
+                支付宝充值说明：
+                第一步：登录你的支付宝直接付款给 13250219731[**军] 【最低充值5元】
+                第二步：付款成功后请复制支付宝交易订单号
+                第三步：在备注框填写付款的充值金额后，确定提交
+                <font style="color: red">如果充值后5分钟内没有到账，请检查输入的交易订单号和金额是否输入正确。</font>
+                <p>（备注：为避免风险，每天要使用多少就只充值多少，请不需多充值。）
+                    如果交易订单号正确充值没有到账，请联系客服QQ13250219731</p>
+            </div>
+            <div class="col-md-4 font-p">
+                <span class="star">*</span>付款交易单号
+            </div>
+            <div class="col-md-8 ">
+                <input id="orderId" name="交易单号"  required  type="text" class="font-input k-textbox k-valid"  data-bind="value:model.orderId">
+            </div>
+            <script>kendo.bind($('#orderId'), viewModel);</script>
+
+            <div class="col-md-4 font-p">
+                <span class="star">*</span>金额
+            </div>
+            <div class="col-md-8 ">
+                <input id="money" name="金额"  required  type="text" class="font-input k-textbox k-valid"  data-bind="value:model.money">
+            </div>
+            <script>kendo.bind($('#money'), viewModel);</script>
+        </div>
+        <div class="row div-out" >
+            <div class="col-md-4 font-p">
+                <span class="star">*</span>备注
+            </div>
+            <div class="col-md-8 ">
+                <textarea id="remake"  name="备注" type="password" style="height: 15rem" class="font-input k-textbox"  data-bind="value:model.remake"></textarea>
+            </div>
+            <script>kendo.bind($('#remake'), viewModel);</script>
+        </div>
+
+            <div class="col-md-12 font-p" style="text-align: center">
+             <span class="btn btn-primary k-grid-add" onclick="addMoney()"><i class="fa fa-plus-square" ></i>提交</span>
+            </div>
+        <div id="attachment-window"></div>
+    </div>
+    <!--注册-end-->
+</body>
+</html>

@@ -128,7 +128,7 @@ public class DriverController extends BaseController {
     public ResponseData getDriverId(@RequestBody Driver dto, HttpServletRequest request) {
         HttpSession session = request.getSession();
         ResponseData responseData = new ResponseData();
-        //得到用户id
+        //得到司机id
         Long driverId = (Long) session.getAttribute("driverId");
         if (driverId != null) {
             dto.setDriverId(driverId);

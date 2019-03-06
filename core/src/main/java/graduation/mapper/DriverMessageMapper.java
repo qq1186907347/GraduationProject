@@ -20,7 +20,7 @@ public interface DriverMessageMapper extends Mapper<DriverMessage>{
 
     List<DriverMessage> isAuthenticated(DriverMessage dto);
 
-    DriverMessage selectMessage(DriverMessage messageDto);
+    List<DriverMessage>selectMessage(DriverMessage messageDto);
 
     void updateMessageById(DriverMessage driverMessage);
 }

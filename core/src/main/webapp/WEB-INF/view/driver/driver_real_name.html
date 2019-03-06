@@ -1053,7 +1053,7 @@
         <div class="row div-out">
             <div class="col-md-1 font-p">家庭住址</div>
             <div class="col-md-8">
-                <div class="col-md-4 line-style">
+                <div class="col-md-5 line-style">
                     <select class="select selectStyle" id="province" required name="province" data-bind="value:model.province">
                         <option></option>
                     </select>
@@ -1070,7 +1070,7 @@
                     <script>kendo.bind($('#town'), viewModel);</script>
                 </div>
 
-                <div class="col-md-8 line-style">
+                <div class="col-md-7 line-style">
                     <span>详细地址</span><input id="addressDetail" name="详细地址" style="width: 70%;margin-left: 1rem" required type="text"
                                             class=" k-textbox k-valid" data-bind="value:model.addressDetail">
                     <script>kendo.bind($('#addressDetail'), viewModel);</script>
@@ -1185,6 +1185,12 @@
                                     }
 
                                 },
+                                "carBrand": {
+                                    validation: {//属性要求
+                                        required: true,
+                                    }
+
+                                },
                                 "plateNumber": {
                                     validation: {//属性要求
                                         required: true,
@@ -1269,6 +1275,11 @@
                         {
                             field: "plateNumber",
                             title: '车牌',
+                            width: 120
+                        },
+                        {
+                            field: "carBrand",
+                            title: '品牌',
                             width: 120
                         },
                         {

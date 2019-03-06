@@ -27,7 +27,6 @@
             viewModel.model.set('userId',userId);
             viewModel.model.set('orderId',orderId);
             viewModel.model.set('driverId',driverId);
-            viewModel.model.set('complainStatus',0);
             $.ajax({
                 url: '${base.contextPath}/user/complain/isFinish',
                 type: 'POST',
@@ -63,7 +62,7 @@
 <body>
 <div id="page-content">
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "UserOrder.contactName"/>'
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='联系人'
                    data-bind="value:model.contactName" class="k-textbox">
         <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
         <div style="clear:both"></div>

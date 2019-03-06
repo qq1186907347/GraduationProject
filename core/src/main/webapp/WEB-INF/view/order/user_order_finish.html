@@ -97,14 +97,8 @@
 </script>
 <body>
 <div id="page-content">
-    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:create"><@spring.message "hap.new"/></span>
-        <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
-        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
-    </div>
-    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "UserOrder.contactName"/>'
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='联系人'
                    data-bind="value:model.contactName" class="k-textbox">
         <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
         <div style="clear:both"></div>
@@ -113,7 +107,7 @@
     <div style="clear:both">
         <div id="grid"></div>
         <div id="goodsDetail-window"></div>
-        <div i="driverDetail-window"></div>
+        <div id="driverDetail-window"></div>
         <div id="addEvaluate-window"></div>
         <div id="evaluateDetail-window"></div>
     </div>
@@ -128,21 +122,6 @@
                 url: BaseUrl + "/user/order/query/1",
                 type: "POST",
                 dataType: "json"
-            },
-            update: {
-                url: BaseUrl + "/user/order/submit",
-                type: "POST",
-                contentType: "application/json"
-            },
-            destroy: {
-                url: BaseUrl + "/user/order/remove",
-                type: "POST",
-                contentType: "application/json"
-            },
-            create: {
-                url: BaseUrl + "/user/order/submit",
-                type: "POST",
-                contentType: "application/json"
             },
             parameterMap: function (options, type) {
                 if (type !== "read" && options.models) {
@@ -270,7 +249,7 @@
                 sortable: false
             },
         ],
-        editable: true
+        editable: false
     });
 
 </script>

@@ -21,4 +21,6 @@ public interface IDriverMessageService extends IBaseService<DriverMessage>, Prox
     List<DriverMessage>  isAuthenticated(DriverMessage dto);
 
     void updateMessageById(DriverMessage driverMessage);
+
+    List<DriverMessage> selectMessage(DriverMessage dto, int page, int pageSize);
 }

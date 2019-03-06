@@ -3,45 +3,45 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="graduation.mapper.DriverMessageMapper">
     <resultMap id="BaseResultMap" type="graduation.dto.DriverMessage">
-        <result column="message_id" property="messageId" jdbcType="DECIMAL" />
-        <result column="real_name" property="realName" jdbcType="VARCHAR" />
-        <result column="gender" property="gender" jdbcType="VARCHAR" />
-        <result column="nation" property="nation" jdbcType="VARCHAR" />
-        <result column="province" property="province" jdbcType="VARCHAR" />
-        <result column="city" property="city" jdbcType="VARCHAR" />
-        <result column="town" property="town" jdbcType="VARCHAR" />
-        <result column="address_detail" property="addressDetail" jdbcType="VARCHAR" />
-        <result column="birthday" property="birthday" jdbcType="VARCHAR" />
-        <result column="id_card" property="idCard" jdbcType="VARCHAR" />
-        <result column="contact_name" property="contactName" jdbcType="VARCHAR" />
-        <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR" />
-        <result column="phone" property="phone" jdbcType="VARCHAR" />
-        <result column="relation" property="relation" jdbcType="VARCHAR" />
-        <result column="driver_id" property="driverId" jdbcType="DECIMAL" />
-        <result column="message_status" property="messageStatus" jdbcType="DECIMAL" />
+        <result column="message_id" property="messageId" jdbcType="DECIMAL"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="nation" property="nation" jdbcType="VARCHAR"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="town" property="town" jdbcType="VARCHAR"/>
+        <result column="address_detail" property="addressDetail" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="contact_name" property="contactName" jdbcType="VARCHAR"/>
+        <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="relation" property="relation" jdbcType="VARCHAR"/>
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL"/>
+        <result column="message_status" property="messageStatus" jdbcType="DECIMAL"/>
     </resultMap>
 
 
-<insert id="addMessage">
+    <insert id="addMessage">
     INSERT  INTO driver_message (real_name, gender, nation,province, city, town,address_detail,birthday,id_card, contact_name, contact_phone, relation, driver_id,phone)
     VALUES (#{realName}, #{gender},#{nation},#{province}, #{city}, #{town},#{addressDetail},#{birthday},#{idCard},#{contactName},#{contactPhone},#{relation},#{driverId},#{phone})
 </insert>
 
-<select id="selectPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+    <select id="selectPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
         SELECT * from
         driver_message
         where
         message_status = #{messageStatus,jdbcType=VARCHAR}
 </select>
 
-<select id="selectUnPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+    <select id="selectUnPass" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
         SELECT * from
         driver_message
         where
         message_status = #{messageStatus,jdbcType=VARCHAR}
 </select>
 
-<select id="isAuthenticated" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
+    <select id="isAuthenticated" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
         SELECT * from
         driver_message
         where
@@ -50,14 +50,14 @@
         driver_id = #{driverId,jdbcType=DECIMAL}
 </select>
 
-<update id="setMessageStatus" parameterType="graduation.dto.DriverMessage">
+    <update id="setMessageStatus" parameterType="graduation.dto.DriverMessage">
         UPDATE driver_message
         <set>
-        message_status = #{messageStatus,jdbcType=VARCHAR}
+            message_status = #{messageStatus,jdbcType=VARCHAR}
         </set>
         WHERE message_id = #{messageId,jdbcType=DECIMAL}
     </update>
-<update id="updateMessageById" parameterType="graduation.dto.DriverMessage">
+    <update id="updateMessageById" parameterType="graduation.dto.DriverMessage">
         UPDATE driver_message
         <set>
             message_status = #{messageStatus,jdbcType=VARCHAR}
@@ -67,49 +67,59 @@
             <if test="gender!= null">
                 , gender = #{gender,jdbcType=VARCHAR}
             </if>
-            <if  test="nation!= null">
+            <if test="nation!= null">
                 , nation = #{nation,jdbcType=VARCHAR}
             </if>
-            <if  test="province!= null">
+            <if test="province!= null">
                 , province = #{province,jdbcType=VARCHAR}
             </if>
-            <if  test="city!= null">
+            <if test="city!= null">
                 , city = #{city,jdbcType=VARCHAR}
             </if>
-            <if  test="town!= null">
+            <if test="town!= null">
                 , town = #{town,jdbcType=VARCHAR}
             </if>
-            <if  test="addressDetail!= null">
+            <if test="addressDetail!= null">
                 , address_detail = #{addressDetail,jdbcType=VARCHAR}
             </if>
-            <if  test="birthday!= null">
+            <if test="birthday!= null">
                 , birthday = #{birthday,jdbcType=VARCHAR}
             </if>
-            <if  test="idCard!= null">
+            <if test="idCard!= null">
                 , id_card = #{idCard,jdbcType=VARCHAR}
             </if>
-            <if  test="contactName!= null">
+            <if test="contactName!= null">
                 , contact_name = #{contactName,jdbcType=VARCHAR}
             </if>
-            <if  test="contactPhone!= null">
+            <if test="contactPhone!= null">
                 , contact_phone = #{contactPhone,jdbcType=VARCHAR}
             </if>
-            <if  test="phone!= null">
+            <if test="phone!= null">
                 , phone = #{phone,jdbcType=VARCHAR}
             </if>
-            <if  test="relation!= null">
+            <if test="relation!= null">
                 , relation = #{relation,jdbcType=VARCHAR}
             </if>
         </set>
         WHERE message_id = #{messageId,jdbcType=DECIMAL}
-</update>
+    </update>
 
     <select id="selectMessage" resultMap="BaseResultMap" parameterType="graduation.dto.DriverMessage">
         SELECT * from
-        driver_message
+        driver_message e
         <where>
-            <if test="address!= null">
-                and e.address  LIKE concat(concat("%", #{address,jdbcType=VARCHAR}), "%")
+            1=1
+            <if test="province!= null">
+                and e.province LIKE concat(concat("%", #{province,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="city!= null">
+                and e.city LIKE concat(concat("%", #{city,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="town!= null">
+                and e.town LIKE concat(concat("%", #{town,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="addressDetail!= null">
+                and e.address_detail LIKE concat(concat("%", #{addressDetail,jdbcType=VARCHAR}), "%")
             </if>
             <if test="messageId!= null">
                 and e.message_id = #{messageId,jdbcType=DECIMAL}
@@ -124,7 +134,7 @@
                 and e.real_name LIKE concat(concat("%", #{realName,jdbcType=VARCHAR}), "%")
             </if>
         </where>
-</select>
+    </select>
 
 
 </mapper>

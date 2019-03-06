@@ -18,6 +18,7 @@
         SELECT * from
         user_complain e
         <where>
+            1=1
             <if test="orderId!= null">
                 and e.order_id = #{orderId,jdbcType=DECIMAL}
             </if>

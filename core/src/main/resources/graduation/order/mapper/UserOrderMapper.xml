@@ -27,10 +27,25 @@
 
     <select id="selectByUserId" resultMap="BaseResultMap" parameterType="graduation.order.dto.UserOrder">
         SELECT * from
-        user_order
-        where
-        user_id = #{userId,jdbcType=DECIMAL}
-        and order_status= #{orderStatus,jdbcType=DECIMAL}
+        user_order u
+        <where>
+            1=1
+            <if test="userId!= null">
+                and u.user_id = #{userId,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and u.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="orderStatus!= null">
+                and u.order_status = #{orderStatus,jdbcType=DECIMAL}
+            </if>
+            <if test="contactName!= null">
+                and u.contact_name LIKE concat(concat("%", #{contactName,jdbcType=VARCHAR}), "%")
+            </if>
+            <if test="orderId!= null">
+                and u.order_id = #{orderId,jdbcType=DECIMAL}
+            </if>
+        </where>
 </select>
 
     <update id="updateOrder" parameterType="graduation.order.dto.UserOrder">

@@ -31,6 +31,14 @@ public class DriverMessageController extends BaseController {
     IAttachmentService attachmentService;
 
 
+    @RequestMapping(value = "/driver/message/query")
+    @ResponseBody
+    public ResponseData query(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        return new ResponseData(service.selectMessage(dto,page,pageSize));
+    }
+
     @RequestMapping(value = "/driver/message/query/pass")
     @ResponseBody
     public ResponseData queryPass(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
@@ -39,15 +47,25 @@ public class DriverMessageController extends BaseController {
         return new ResponseData(service.selectPass(dto, page, pageSize));
     }
 
-    @RequestMapping(value = "/driver/message/query/{driverId}")
+    @RequestMapping(value = "/driver/message/query/{driverId}/{messageStatus}")
     @ResponseBody
     public ResponseData query(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                               @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
+                              @PathVariable Long driverId,@PathVariable Long messageStatus) {
+        IRequest requestContext = createRequestContext(request);
+        dto.setDriverId(driverId);
+        dto.setMessageStatus(messageStatus);
+        return new ResponseData(service.isAuthenticated(dto));
+    }
+
+    @RequestMapping(value = "/driver/message/queryAdmin/{driverId}")
+    @ResponseBody
+    public ResponseData queryAdmin(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
                               @PathVariable Long driverId) {
         IRequest requestContext = createRequestContext(request);
-        dto.setMessageStatus(0L);
         dto.setDriverId(driverId);
-        return new ResponseData(service.isAuthenticated(dto));
+        return new ResponseData(service.selectMessage(dto,1,1));
     }
 
     @RequestMapping(value = "/driver/message/refuse/{driverId}")
@@ -74,12 +92,21 @@ public class DriverMessageController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/driver/message/query/wait")
+    @ResponseBody
+    public ResponseData queryWait(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        return new ResponseData(service.selectUnPass(dto, page, pageSize));
+    }
+
     @RequestMapping(value = "/driver/message/query/unpass")
     @ResponseBody
     public ResponseData queryUnPass(DriverMessage dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                    @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
-        return new ResponseData(service.selectUnPass(dto, page, pageSize));
+        dto.setMessageStatus(2L);
+        return new ResponseData(service.selectMessage(dto, page, pageSize));
     }
 
     @RequestMapping(value = "/driver/message/add")
@@ -96,7 +123,10 @@ public class DriverMessageController extends BaseController {
             //车辆信息未填写
             if (driverMessage.getCarList() == null) {
                 DriverCar bean=new DriverCar();
-                bean.setDriverId(driverMessage.getDriverId());
+                if(driverId==null){
+                    driverId=-1L;
+                }
+                bean.setDriverId(driverId);
                 List<DriverCar> driverCars=driverCarService.selectCars(bean);
                 if(driverCars.size()==0){
                     responseData.setRows(driverCars);
@@ -210,6 +240,7 @@ public class DriverMessageController extends BaseController {
                 responseData.setMessage("实名审核中，请耐心等待");
             }
         }
+        responseData.setTotal(driverId);
         return responseData;
     }
 }

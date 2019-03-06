@@ -14,6 +14,7 @@ public class DriverCar extends BaseDTO {
 
      public static final String FIELD_CAR_ID = "carId";
      public static final String FIELD_CAR_TYPE = "carType";
+    public static final String FIELD_CAR_BRAND = "carBrand";
      public static final String FIELD_PLATE_NUMBER = "plateNumber";
      public static final String FIELD_CAR_LONG = "carLong";
      public static final String FIELD_CAR_HEIGHT = "carHeight";
@@ -34,6 +35,11 @@ public class DriverCar extends BaseDTO {
      @NotEmpty
      @Length(max = 20)
      private String plateNumber; //车牌
+
+    @NotEmpty
+    @Length(max = 20)
+    private String carBrand; //品牌
+
 
      @NotEmpty
      @Length(max = 11)
@@ -74,7 +80,15 @@ public class DriverCar extends BaseDTO {
          return carType;
      }
 
-     public void setPlateNumber(String plateNumber){
+    public String getCarBrand() {
+        return carBrand;
+    }
+
+    public void setCarBrand(String carBrand) {
+        this.carBrand = carBrand;
+    }
+
+    public void setPlateNumber(String plateNumber){
          this.plateNumber = plateNumber;
      }
 

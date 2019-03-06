@@ -2,6 +2,9 @@ package graduation.order.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
+import com.hand.hap.mail.ReceiverTypeEnum;
+import com.hand.hap.mail.dto.MessageReceiver;
+import com.hand.hap.mail.service.IMessageService;
 import com.hand.hap.system.service.impl.BaseServiceImpl;
 import graduation.dto.*;
 import graduation.mapper.*;
@@ -18,6 +21,8 @@ import graduation.order.dto.UserOrder;
 import graduation.order.service.IUserOrderService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -45,6 +50,10 @@ public class UserOrderServiceImpl extends BaseServiceImpl<UserOrder> implements 
     DriverMessageMapper driverMessageMapper;
     @Autowired
     AddressMapper addressMapper;
+    @Autowired
+    IMessageService iMessageService;
+
+
     private static final Logger logger = LoggerFactory.getLogger(UserOrder.class);
 
     @Override
@@ -60,14 +69,36 @@ public class UserOrderServiceImpl extends BaseServiceImpl<UserOrder> implements 
     }
 
     @Override
-    public void addOrder(UserOrder dto, Long startAddressId) {
+    public void addOrder(IRequest requestContext, UserOrder dto, Long startAddressId) throws Exception {
         try {
             if(dto.getOrderRemake()==null){
                 dto.setOrderRemake("");
             }
             Long driverId=getEligibleDriver(dto,startAddressId);
             dto.setDriverId(driverId);
-            userOrderMapper.addOrder(dto);
+            //发送邮件通知
+            List<MessageReceiver> recipients = new ArrayList<>();
+            // 收件人
+            DriverMessage messageDto=new DriverMessage();
+            messageDto.setDriverId(driverId);
+            List<DriverMessage> driverMessages=driverMessageMapper.selectMessage(messageDto);
+
+            Driver driverDto=new Driver();
+            driverDto.setDriverId(dto.getDriverId());
+            Driver driver=driverMapper.selectByDriver(driverDto);
+
+            MessageReceiver messageReceiver = new MessageReceiver();
+            messageReceiver.setMessageAddress(driver.getEmail());
+            messageReceiver.setMessageType(ReceiverTypeEnum.NORMAL.getCode());
+            recipients.add(messageReceiver);
+            HashMap<String, Object> templateData = new HashMap<String, Object>();
+            templateData.put("realName", driverMessages.get(0).getContactName());
+            templateData.put("address",dto.getStartAddress());
+            templateData.put("concactName", dto.getContactName());
+            templateData.put("phone", dto.getContactPhone());
+            //发送邮件
+            iMessageService.sendMessage(requestContext, "G_DRIVER", templateData, recipients, (List<Long>) null);
+            userOrderMapper.insertSelective(dto);
         }catch (Exception e){
             logger.debug("增加订单出错！" + e.getMessage());
             e.printStackTrace();
@@ -100,23 +131,29 @@ public class UserOrderServiceImpl extends BaseServiceImpl<UserOrder> implements 
         //获取卡车类型
         CarType carType=carTypeMapper.selectByPrimaryKey(dto.getCarId());
         driverCar.setCarType(carType.getCarType());
-        driverCar.setCarTonnage(sumQuality);
+        //1000KG=1吨
+        driverCar.setCarTonnage(sumQuality/1000);
         List<DriverCar> driverCars=driverCarMapper.selectCars(driverCar);
+        //没有符合的车辆
+        List<DriverCar> driverCars2=new ArrayList<>();
         //查找到符合吨位的车辆后查找符合条件的司机
         for(DriverCar driverCar1:driverCars){
             DriverMessage driverMessage=new DriverMessage();
             DriverMessage messageDto=new DriverMessage();
             messageDto.setDriverId(driverCar.getDriverId());
             messageDto.setMessageStatus(1L);
-            driverMessage=driverMessageMapper.selectMessage(messageDto);
+            driverMessage=driverMessageMapper.selectMessage(messageDto).get(0);
             Address address=new Address();
             address.setAddressId(startAddressId);
-            address=addressMapper.selectByPrimaryKey(address);
+            address=addressMapper.selectAddress(address).get(0);
             //司机实名认证的地址是否和发货地址一致
             if(address.getTown().equals(driverMessage.getTown())){
                 return  driverMessage.getDriverId();
             }
+            if(address.getCity().equals(driverMessage.getCity())){
+                return  driverMessage.getDriverId();
+            }
         }
-        return -1L;
+        return driverCars2.get(0).getDriverId();
     }
 }

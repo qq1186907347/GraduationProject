@@ -31,7 +31,6 @@ public class UserOrder extends BaseDTO {
     public static final String FIELD_DRIVER_ID = "driverId";
     public static final String FIELD_ORDER_REMAKE = "orderRemake";
     public static final String FIELD_ORDER_STATUS = "orderStatus";
-    public static final String FIELD_START_ADDRESS_ID = "startAddressId";
 
 
     @Id
@@ -72,7 +71,6 @@ public class UserOrder extends BaseDTO {
     @Length(max = 500)
     private String orderRemake; //备注
 
-    private Long startAddressId;
 
 
     public void setOrderId(Long orderId) {
@@ -167,11 +165,4 @@ public class UserOrder extends BaseDTO {
         this.orderStatus = orderStatus;
     }
 
-    public Long getStartAddressId() {
-        return startAddressId;
-    }
-
-    public void setStartAddressId(Long startAddressId) {
-        this.startAddressId = startAddressId;
-    }
 }

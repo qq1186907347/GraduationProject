@@ -1,9 +1,9 @@
 <#include "../include/header.html">
 <script type="text/javascript">
     var viewModel = Hap.createGridViewModel("#grid");
-    //货物详情
+    //订单详情
     function openOrderWindow(orderId) {
-        var url = "${base.contextPath}/home/order_refuse.html?orderId="+orderId;
+        var url = "${base.contextPath}/evaluate/order_detail.html?orderId="+orderId;
         Hap.createWindow('#orderDetail-window', {
             width: '80%',
             height: '80%',
@@ -11,14 +11,49 @@
             url: url
         }).center().open();
     }
+    //确认已经处理投诉
+    function finishComplain(complainId) {
+        kendo.ui.showConfirmDialog({
+            title: $l('hap.tip.info'),
+            message: "确认已经处理了吗？不可以撤销"
+        }).done(function (event) {
+            if (event.button == 'OK') {
+                viewModel.model.set("complainId",complainId);
+                $.ajax({
+                    url: '${base.contextPath}/user/complain/setFinish',
+                    type: 'POST',
+                    dataType: "json",
+                    data:JSON.stringify(viewModel.model),
+                    contentType: "application/json",
+                    success: function (result) {
+                        if(result.success){
+                            kendo.ui.showInfoDialog({
+                                title: $l('hap.tip.info'),
+                                message: '操作成功',
+                                buttons: [{
+                                    text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                    type: 'primary',
+                                    click: function (e) {
+                                        window.viewModel.refresh();
+                                        e.dialog.destroy();
+                                        e.deferred.resolve({ button: 'OK' });
+                                    }
+                                }],
+                            });
+                        } else {
+                            kendo.ui.showErrorDialog({
+                                title: $l('hap.error'),
+                                message : result.message
+                            });
+                        }
+                    }
+                });
+            }
+        })
+    }
 </script>
 <body>
 <div id="page-content">
-    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:create"><@spring.message "hap.new"/></span>
-        <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
-        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
-    </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
             <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='投诉人'
@@ -39,24 +74,9 @@
     dataSource = new kendo.data.DataSource({
         transport: {
             read: {
-                url: BaseUrl + "/user/complain/query",
+                url: BaseUrl + "/user/complain/queryById/0",
                 type: "POST",
                 dataType: "json"
-            },
-            update: {
-                url: BaseUrl + "/user/complain/submit",
-                type: "POST",
-                contentType: "application/json"
-            },
-            destroy: {
-                url: BaseUrl + "/user/complain/remove",
-                type: "POST",
-                contentType: "application/json"
-            },
-            create: {
-                url: BaseUrl + "/user/complain/submit",
-                type: "POST",
-                contentType: "application/json"
             },
             parameterMap: function (options, type) {
                 if (type !== "read" && options.models) {
@@ -143,16 +163,16 @@
                 },
                 attributes: {style: "text-align:center"},
                 template : function (rowdata) {
-                    if (rowdata.orderId) {
-                        var orderComplain="orderComplain('"+rowdata.userId+"','"+rowdata.orderId+"','"+rowdata.driverId+"')";
+                    if (rowdata.complainId) {
+                        var finishComplain="finishComplain('"+rowdata.complainId+"')";
                         //console.log(myString);
-                        return '<button   onclick='+orderComplain+'>已处理</button>'
+                        return '<button   onclick='+finishComplain+'>已处理</button>'
                     } else return ''
                 },
                 sortable: false
             },
         ],
-        editable: true
+        editable: false
     });
 
 </script>

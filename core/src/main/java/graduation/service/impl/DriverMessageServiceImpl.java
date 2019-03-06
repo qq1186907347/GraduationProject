@@ -41,14 +41,14 @@ public class DriverMessageServiceImpl extends BaseServiceImpl<DriverMessage> imp
     public List<DriverMessage> selectPass(DriverMessage dto, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         dto.setMessageStatus(1L);
-        return driverMessageMapper.selectPass(dto);
+        return driverMessageMapper.selectMessage(dto);
     }
 
     @Override
     public List<DriverMessage> selectUnPass(DriverMessage dto, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         dto.setMessageStatus(0L);
-        return driverMessageMapper.selectUnPass(dto);
+        return driverMessageMapper.selectMessage(dto);
     }
 
     @Override
@@ -98,6 +98,13 @@ public class DriverMessageServiceImpl extends BaseServiceImpl<DriverMessage> imp
     @Override
     public void updateMessageById(DriverMessage driverMessage) {
         driverMessageMapper.updateMessageById(driverMessage);
+    }
+
+    @Override
+    public List<DriverMessage> selectMessage(DriverMessage dto, int page, int pageSize) {
+        //分页
+        PageHelper.startPage(page, pageSize);
+        return driverMessageMapper.selectMessage(dto);
     }
 
 }

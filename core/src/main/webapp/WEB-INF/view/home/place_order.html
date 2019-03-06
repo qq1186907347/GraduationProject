@@ -15,6 +15,7 @@
     <script src="${base.contextPath}/lib/kendoui/js/kendo.all.min.js?v=20181015"></script>
     <script src="${base.contextPath}/lib/kendoui/js/jszip.min.js"></script>
 
+
     <link href="${base.contextPath}/lib/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="${base.contextPath}/lib/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 
@@ -29,6 +30,7 @@
     <script src="${base.contextPath}/lib/kendoui/js/kendo.hap.js?v=20181015"></script>
     <script src="${base.contextPath}/lib/assets/global/plugins/jquery.blockui.min.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/jquery.placeholder.js"></script>
+    <script src="${base.contextPath}/common/code?creditUser=CREDIT_USER" type="text/javascript"></script>
     <style>
         .my-placeholder { color: #aaa; }
     </style>
@@ -60,6 +62,17 @@
     </style>
 </head>
 <script>
+    //加载数据
+    $(function () {
+        $("#num").kendoDropDownList({
+            dataTextField: "meaning",
+            dataValueField: "value",
+            dataSource: creditUser,
+            change: function () {
+                viewModel.model.set('num', this.value());
+            }
+        });
+    });
     var viewModel = kendo.observable({
         model: {},
     });
@@ -73,6 +86,35 @@
             title: '卡车类型',
             url: url
         }).center().open();
+    }
+
+    //检验积分
+    function checkCredit() {
+        var credit=$("#num").val();
+        viewModel.model.set('num',credit);
+        if(credit>0){
+            $.ajax({
+                url: '${base.contextPath}/credit/user/getCredit',
+                type: 'POST',
+                dataType: "json",
+                data: JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.success) {
+                        viewModel.model.set('num',credit);
+                    } else {
+                        //初始化下拉框
+                        var color = $("#num").data("kendoDropDownList");
+                        viewModel.model.set('num',null);
+                        color.select(0); // 设置初始化时选中项，索引从0开始。
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message: "积分不足，请多下单,您的积分余额："+result.message,
+                        });
+                    }
+                }
+            });
+        }
     }
 
     //起始地址窗口
@@ -115,6 +157,8 @@
             loadData();
             $("#useCar").attr('style', 'display:none');
             $("#confirmOrder").removeAttr("style");
+            var credit=$("#num").val();
+
         }
     }
     //表单校验
@@ -132,6 +176,26 @@
         }
     }
 
+    function addCredit() {
+        $.ajax({
+            url: '${base.contextPath}/credit/user/add',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+
+                } else {
+                    kendo.ui.showErrorDialog({
+                        title: $l('hap.error'),
+                        message: result.message,
+                    });
+                }
+            }
+        });
+    }
+
     //确认下订单
     function confirmOrder(){
         var startAddressId=viewModel.model.get('startAddressId')
@@ -143,6 +207,13 @@
             contentType: "application/json",
             success: function (result) {
                 if(result.success){
+                    //下单成功后增加积分处理
+                    var credit=viewModel.model.get('num');
+                    viewModel.model.set('orderId',result.message);
+                    viewModel.model.set('creditType',1);
+                    if (credit>0){
+                        addCredit();
+                    }
                     kendo.ui.showInfoDialog({
                         title: $l('hap.tip.info'),
                         message: "下单成功，可以在订单管理查看订单状态",
@@ -205,7 +276,7 @@
             <input type="hidden" id="addressType">
             <div class="col-md-12 line-style">
                 <i class="fa fa-tree" style="color: green"></i>
-                <input readonly="readonly" id="startAddress" name="起点" required onclick="openAddressWindow1()"
+                <input  id="startAddress" name="起点" required onfocus="openAddressWindow1()"
                  placeholder="单击选择起点地址"
                  type="text" class="font-input k-textbox k-valid"
                  data-bind="value:model.userName">
@@ -215,7 +286,7 @@
             <div class="col-md-12"><p>-</p></div>
             <div class="col-md-12 line-style">
                 <i class="fa fa-tree" style="color:darkred"></i>
-                <input readonly="readonly"  id="endAddress" required name="目的地"  onclick="openAddressWindow2()"
+                <input   id="endAddress" required name="目的地"  onfocus="openAddressWindow2()"
                        placeholder="单击选择目的地地址" type="text"
                        class="font-input k-textbox"
                         data-bind="value:model.endAddress">
@@ -225,17 +296,23 @@
             <div id="address-Window"></div>
 
             <div class="col-md-12 line-style">货物
-                <input readonly="readonly"    id="goods" required onclick="openGoodsWindow()"
+                <input   id="goods" required onfocus="openGoodsWindow()"
                        name="货物" placeholder="单击选择货物" type="text"
                        class="font-input k-textbox"
                        data-bind="value:model.goods">
                 <div id="goods-window"></div>
             </div>
             <div class="col-md-12 line-style">卡车类型
-                <input readonly="readonly"  id="carType" required
+                <input   id="carType" required
                        name="卡车类型" placeholder="单击选择卡车类型" type="text"
                        class="font-input k-textbox"
-                        onclick="openCarTypeWindow()">
+                         onfocus="openCarTypeWindow()">
+            </div>
+            <div class="col-md-12 line-style">积分减免
+                <input  id="num" required
+                       name="积分"  type="text"
+                       class="font-input "
+                       onchange="checkCredit()">
             </div>
             <div id="carType-Window"></div>
             <div class="col-md-12 line-style">备注</div>
@@ -279,19 +356,27 @@
                                   data-bind="value:model.totalDistance">
         </div>
 
-        <div class="col-md-4 line-style"  style="text-align: left;color:#999693;">预计耗时</div>
+        <div class="col-md-4 line-style" style="text-align: left;color:#999693;">预计耗时</div>
         <div class="col-md-8 line-style" style="text-align: right;color:#999693;">
-            <input  readonly="readonly" id="totalTime" type="text" style="border-bottom-width: 0rem; "
-                    class=" k-textbox concact-input"
-                    data-bind="value:model.totalTime">
+            <input readonly="readonly" id="totalTime" type="text" style="border-bottom-width: 0rem; "
+                   class=" k-textbox concact-input"
+                   data-bind="value:model.totalTime">
         </div>
 
+        <div id="priceFirstdDiv" style="display:none">
+            <div class="col-md-5 line-style" style="text-align: left;color:#999693;">原价格</div>
+            <div class="col-md-5 line-style" style="text-align: right;color:#999693;">
+                <span>＄</span>
+                <input readonly="readonly" id="priceFirst" type="text" style="border-bottom-width: 0rem; "
+                       class=" k-textbox concact-input"></div>
+        </div>
 
         <div class="col-md-5 line-style"  style="text-align: left;color:#999693;">价格</div>
         <div class="col-md-5 line-style" style="text-align: right;color:#999693;">
             <span>＄</span>
-        </div><input  readonly="readonly" id="price" type="text" style="border-bottom-width: 0rem; "
-                      class=" k-textbox concact-input">
+            <input  readonly="readonly" id="price" type="text" style="border-bottom-width: 0rem; "
+                    class=" k-textbox concact-input">
+        </div>
     </div>
 
     </div>
@@ -344,9 +429,16 @@
             $('#totalTime').val(plan.getDuration(true));
             //获得价钱
             var temp=plan.getDistance(true);
-            var totalPrice=getTotalPrice(temp.substring(0,temp.length-2));
+            var totalPrice=parseFloat(0);
+             totalPrice=getTotalPrice(temp.substring(0,temp.length-2));
+            var num=totalPrice;
+            //避免失去精度
+            totalPrice=num.toFixed(1);
+
+            $("#priceFirst").val(totalPrice);
             viewModel.model.set('orderPrice',totalPrice);
             $('#price').val(totalPrice);
+            setPrice(totalPrice);
             console.log("总距离："+temp.substring(0,temp.length-2));
 
         }
@@ -361,8 +453,6 @@
         //启动鼠标滚轮操作
         map.enableScrollWheelZoom();
         transit.search(startPoint, endPoint);
-        //110.365067, lat: 21.257463--116.395645, lat: 39.929986
-
     }
     //获取路程和时间
     function loadData() {
@@ -371,12 +461,38 @@
         var endAddress=$("#endAddress").val();
         getLn_La(startAddress,endAddress);
     }
+    function setPrice(totalPrice) {
+        debugger;
+        var credit=viewModel.model.get('num');
+        if(credit==1){
+            $("#priceFirstdDiv").removeAttr("style");
+            $('#price').val(totalPrice-10);
+            viewModel.model.set('orderPrice',totalPrice-10);
+        }
+        if(credit==2){
+            $("#priceFirstdDiv").removeAttr("style");
+            $('#price').val(totalPrice-20);
+            viewModel.model.set('orderPrice',totalPrice-20);
+        }
+        if(credit==3){
+            $("#priceFirstdDiv").removeAttr("style");
+            $('#price').val(totalPrice-30);
+            viewModel.model.set('orderPrice',totalPrice-30);
+        }
+        if(credit==10){
+            $("#priceFirstdDiv").removeAttr("style");
+            $('#price').val(totalPrice-150);
+            viewModel.model.set('orderPrice',totalPrice-150);
+        }
+    }
+
     function  getTotalPrice(totalDistance) {
-        var totalDistance2=1;
+        var totalDistance2=parseFloat(1);
         totalDistance2=parseFloat(totalDistance);
-        var startPrice=parseFloat($('#startDistance').val());
+        var startPrice=parseFloat($('#startPrice').val());
         var startDistance=parseFloat($('#startDistance').val());
         var addPrice=parseFloat($('#addPrice').val());
+        debugger;
         if(totalDistance<startDistance){
             return startPrice;
         }else{

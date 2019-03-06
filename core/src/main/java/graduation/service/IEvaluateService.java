@@ -1,5 +1,6 @@
 package graduation.service;
 
+import com.hand.hap.core.IRequest;
 import com.hand.hap.core.ProxySelf;
 import com.hand.hap.system.service.IBaseService;
 import graduation.dto.Evaluate;
@@ -10,5 +11,5 @@ public interface IEvaluateService extends IBaseService<Evaluate>, ProxySelf<IEva
 
     void addEvaluate(Evaluate dto);
 
-    List<Evaluate> selectEvaluate(Evaluate dto);
+    List<Evaluate> selectEvaluate(IRequest requestContext, Evaluate dto, int page, int pageSize);
 }

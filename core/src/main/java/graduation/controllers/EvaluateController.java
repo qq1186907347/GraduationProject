@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.validation.BindingResult;
 
@@ -22,21 +23,39 @@ public class EvaluateController extends BaseController {
     private IEvaluateService service;
 
 
-    @RequestMapping(value = "/evaluate/query")
+    @RequestMapping(value = "/evaluate/queryByUser/{evaluateType}")
     @ResponseBody
     public ResponseData query(Evaluate dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
+                              @PathVariable Long evaluateType) {
+        HttpSession session = request.getSession();
+        //得到用户id
+        Long userId = (Long) session.getAttribute("userId");
+        dto.setUserId(userId);
+        dto.setEvaluateType(evaluateType);
         IRequest requestContext = createRequestContext(request);
-        return new ResponseData(service.select(requestContext, dto, page, pageSize));
+        return new ResponseData(service.selectEvaluate(requestContext, dto, page, pageSize));
     }
-
+    @RequestMapping(value = "/evaluate/queryByDriver/{evaluateType}")
+    @ResponseBody
+    public ResponseData queryByDriver(Evaluate dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
+                              @PathVariable Long evaluateType) {
+        HttpSession session = request.getSession();
+        //得到司机id
+        Long driverId = (Long) session.getAttribute("driverId");
+        dto.setDriverId(driverId);
+        dto.setEvaluateType(evaluateType);
+        IRequest requestContext = createRequestContext(request);
+        return new ResponseData(service.selectEvaluate(requestContext, dto, page, pageSize));
+    }
     @RequestMapping(value = "/evaluate/query/{orderId}/{evaluateType}")
     @ResponseBody
     public ResponseData queryByOrderId(Evaluate dto, HttpServletRequest request,@PathVariable String orderId,@PathVariable Long evaluateType) {
         IRequest requestContext = createRequestContext(request);
         dto.setEvaluateType(evaluateType);
         dto.setOrderId(orderId);
-        return new ResponseData(service.selectEvaluate(dto));
+        return new ResponseData(service.selectEvaluate(requestContext, dto, 1, 1));
     }
 
     @RequestMapping(value = "/evaluate/add")
@@ -59,7 +78,7 @@ public class EvaluateController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         ResponseData responseData=new ResponseData(false);
         try {
-           List<Evaluate> evaluates=service.selectEvaluate(dto);
+           List<Evaluate> evaluates=service.selectEvaluate(requestContext, dto, 1, 10);
            if(evaluates.size()==0){
                responseData.setSuccess(true);
            }

@@ -44,6 +44,7 @@ body classes:
 
     //加载数据
     function getData() {
+        //校验是否登录了
         viewModel.model.set('userId', '1');
         $.ajax({
             url: '${base.contextPath}/user/getUserId',
@@ -56,6 +57,8 @@ body classes:
                     $("#userlr").attr('style', 'display:none');
                     $("#userlr2").removeAttr("style");
                 } else {
+                    $("#index").attr('style', 'display:none');
+                    $("#placeOrderDiv").attr('style', 'display:none');
                     kendo.ui.showErrorDialog({
                         title: $l('hap.error'),
                         message: result.message
@@ -151,6 +154,127 @@ body classes:
             url: url
         }).center().open();
     }
+
+    //待确认订单窗口
+    function openUserOrderWindow() {
+        var url = "${base.contextPath}/order/user_order.html";
+        Hap.createWindow('#userOrder-window', {
+            width: '80%',
+            height: '80%',
+            title: '待确认订单',
+            url: url
+        }).center().open();
+    }
+    //充值窗口
+    function openAddMoneyWindow() {
+        var url = "${base.contextPath}/money/new_money.html";
+        Hap.createWindow('#newMoney-window', {
+            width: '80%',
+            height: '80%',
+            title: '充值',
+            url: url
+        }).center().open();
+    }
+
+    //充值记录窗口
+    function openBAddWindow() {
+        var url = "${base.contextPath}/money/balance_user_add.html";
+        Hap.createWindow('#bAdd-window', {
+            width: '80%',
+            height: '80%',
+            title: '充值记录',
+            url: url
+        }).center().open();
+    }
+    //下单流水窗口
+    function openBReduceWindow() {
+        var url = "${base.contextPath}/money/balance_user_reduce.html";
+        Hap.createWindow('#bReduce-window', {
+            width: '80%',
+            height: '80%',
+            title: '下单流水',
+            url: url
+        }).center().open();
+    }
+    //我对司机评价窗口
+    function openUEvaluateWindow() {
+        var url = "${base.contextPath}/evaluate/user_evaluate_user.html";
+        Hap.createWindow('#uEvaluate-window', {
+            width: '80%',
+            height: '80%',
+            title: '我的评价',
+            url: url
+        }).center().open();
+    }
+
+    //司机对我评价窗口
+    function openDEvaluateWindow() {
+        var url = "${base.contextPath}/evaluate/driver_evaluate_user.html";
+        Hap.createWindow('#dEvaluate-window', {
+            width: '80%',
+            height: '80%',
+            title: '我的评价',
+            url: url
+        }).center().open();
+    }
+
+    //我的投诉
+    function openUComplainWindow() {
+        var url = "${base.contextPath}/home/user_complain_user.html";
+        Hap.createWindow('#uComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '我的投诉',
+            url: url
+        }).center().open();
+    }
+    //积分流水
+    function openCreditUserWindow() {
+        var url = "${base.contextPath}/credit/credit_user.html";
+        Hap.createWindow('#uComplain-window', {
+            width: '80%',
+            height: '80%',
+            title: '积分流水',
+            url: url
+        }).center().open();
+    }
+    //查询积分
+    function getCredit() {
+        $.ajax({
+            url: '${base.contextPath}/credit/user/getCredit',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    kendo.ui.showErrorDialog({
+                        title: "积分",
+                        message: result.message+"分"
+                    });
+                }
+            }
+        });
+    }
+    //查询余额
+    function getBalance() {
+        $.ajax({
+            url: '${base.contextPath}/balance/user/getBalance',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(viewModel.model),
+            contentType: "application/json",
+            success: function (result) {
+                if (result.success) {
+                    kendo.ui.showErrorDialog({
+                        title: "余额",
+                        message: result.message+"元"
+                    });
+                }
+            }
+        });
+    }
+
     //退出
     function setOut() {
         $.ajax({
@@ -168,8 +292,7 @@ body classes:
                             text: kendo.ui.Widget.prototype.options.messages['ok'],
                             type: 'primary',
                             click: function (e) {
-                                $("#userlr2").attr('style', 'display:none');
-                                $("#userlr").removeAttr("style");
+                                window.location.href="${base.contextPath}/home/index.html";
                                 e.dialog.destroy();
                                 e.deferred.resolve({button: 'OK'});
                             }
@@ -235,6 +358,12 @@ body classes:
 							<div id="orderRefuse-window"></div>
 							<div id="userOrder-window"></div>
 							<div id="address-window"></div>
+							<div id="bAdd-window"></div>
+							<div id="bReduce-window"></div>
+							<div id="newMoney-window"></div>
+							<div id="uEvaluate-window"></div>
+							<div id="dEvaluate-window"></div>
+							<div id="uComplain-window"></div>
 						</div>
 						<!--							<script>kendo.bind($('#userlr'), viewModel);</script>
                                                     <script>kendo.bind($('#login-window'), viewModel);</script>
@@ -298,7 +427,8 @@ body classes:
 									</div>
 
 									<!-- Collect the nav links, forms, and other content for toggling -->
-									<div class="collapse navbar-collapse" id="navbar-collapse-1">
+									<div id="index">
+									<div  class="collapse navbar-collapse" id="navbar-collapse-1">
 										<ul class="nav navbar-nav navbar-right">
 											<li class="dropdown active">
 												<a href="index.html" class="dropdown-toggle"
@@ -312,7 +442,6 @@ body classes:
 											<li class="dropdown">
 												<a href="#" class="dropdown-toggle" data-toggle="dropdown">我的</a>
 												<ul class="dropdown-menu">
-													<li><a href="features-typography.html">订单管理</a></li>
 													<li class="dropdown">
 														<a href="#" class="dropdown-toggle" data-toggle="dropdown">订单管理</a>
 														<ul class="dropdown-menu">
@@ -325,43 +454,17 @@ body classes:
 													<li><a href="#" onclick="openCollectsWindow()">货物管理</a></li>
 													<li class="dropdown">
 														<a href="#" class="dropdown-toggle"
-														   data-toggle="dropdown">Icons</a>
+														   data-toggle="dropdown">余额管理</a>
 														<ul class="dropdown-menu">
-															<li><a href="features-icons-fontawesome.html">Font Awesome
-																Icons</a></li>
-															<li><a href="features-icons-fontello.html">Fontello
-																Icons</a></li>
-															<li><a href="features-icons-glyphicons.html">Glyphicons
-																Icons</a></li>
+															<li><a href="#" onclick="openAddMoneyWindow()">充值</a></li>
+															<li><a href="#" onclick="openBReduceWindow()">余额流水（下单）</a></li>
+															<li><a href="#" onclick="openBAddWindow()">充值记录</a></li>
+															<li><a href="#" onclick="getBalance()">我的余额</a></li>
 														</ul>
 													</li>
 													<li class="dropdown">
-														<a href="#" class="dropdown-toggle" data-toggle="dropdown">Footer
-															- Options</a>
-														<ul class="dropdown-menu">
-															<li><a href="features-footer-1.html#footer">Footer 1
-																(Default)</a></li>
-															<li><a href="features-footer-2.html#footer">Footer 2</a>
-															</li>
-															<li><a href="features-footer-3.html#footer">Footer 3</a>
-															</li>
-															<li><a href="features-footer-4.html#footer">Footer 4</a>
-															</li>
-														</ul>
+														<a href="#" class="dropdown-toggle" data-toggle="dropdown" onclick="openUComplainWindow()">我的投诉</a>
 													</li>
-													<li class="dropdown">
-														<a href="#" class="dropdown-toggle" data-toggle="dropdown">Header
-															- Options</a>
-														<ul class="dropdown-menu">
-															<li><a href="features-header-1.html">Header - Layout 1
-																(Default)</a></li>
-															<li><a href="features-header-2.html">Header - Layout 2</a>
-															</li>
-															<li><a href="features-header-3.html">Header - Layout 3</a>
-															</li>
-														</ul>
-													</li>
-													<li><a href="features-grid.html">Grid System</a></li>
 												</ul>
 											</li>
 											<!-- mega-menu start -->
@@ -371,88 +474,32 @@ body classes:
 											</li>
 											<!-- mega-menu end -->
 											<li class="dropdown">
-												<a href="portfolio-3col.html" class="dropdown-toggle"
-												   data-toggle="dropdown">Portfolio</a>
+												<a href="#" class="dropdown-toggle"
+												   data-toggle="dropdown">评价管理</a>
 												<ul class="dropdown-menu">
 													<li class="dropdown">
-														<a href="portfolio-3col.html" class="dropdown-toggle"
-														   data-toggle="dropdown">Portfolio - Style 1</a>
+														<a href="#" class="dropdown-toggle"
+														   data-toggle="dropdown">我的评价</a>
 														<ul class="dropdown-menu">
-															<li><a href="portfolio-2col.html">Portfolio - 2 columns</a>
+															<li><a href="#" onclick="openUEvaluateWindow()">我对司机的评价</a>
 															</li>
-															<li><a href="portfolio-3col.html">Portfolio - 3 columns</a>
+															<li><a href="#" onclick="openDEvaluateWindow()">司机对我的评价</a>
 															</li>
-															<li><a href="portfolio-4col.html">Portfolio - 4 columns</a>
-															</li>
-															<li><a href="portfolio-sidebar.html">Portfolio - With
-																sidebar</a></li>
 														</ul>
-													</li>
-													<li class="dropdown">
-														<a href="portfolio-3col-2.html" class="dropdown-toggle"
-														   data-toggle="dropdown">Portfolio - Style 2</a>
-														<ul class="dropdown-menu">
-															<li><a href="portfolio-2col-2.html">Portfolio - 2
-																columns</a></li>
-															<li><a href="portfolio-3col-2.html">Portfolio - 3
-																columns</a></li>
-															<li><a href="portfolio-4col-2.html">Portfolio - 4
-																columns</a></li>
-															<li><a href="portfolio-sidebar-2.html">Portfolio - With
-																sidebar</a></li>
-														</ul>
-													</li>
-													<li class="dropdown">
-														<a href="portfolio-3col-3.html" class="dropdown-toggle"
-														   data-toggle="dropdown">Portfolio - Style 3</a>
-														<ul class="dropdown-menu">
-															<li><a href="portfolio-2col-3.html">Portfolio - 2
-																columns</a></li>
-															<li><a href="portfolio-3col-3.html">Portfolio - 3
-																columns</a></li>
-															<li><a href="portfolio-4col-3.html">Portfolio - 4
-																columns</a></li>
-															<li><a href="portfolio-sidebar-3.html">Portfolio - With
-																sidebar</a></li>
-														</ul>
-													</li>
-													<li><a href="portfolio-full.html">Portfolio - Full width</a></li>
-													<li><a href="portfolio-item.html">Portfolio single</a></li>
-													<li><a href="portfolio-item-2.html">Portfolio single 2</a></li>
-													<li><a href="portfolio-item-3.html">Portfolio single 3</a></li>
-												</ul>
-											</li>
-											<li class="dropdown">
-												<a href="shop-listing-3col.html" class="dropdown-toggle"
-												   data-toggle="dropdown">Shop</a>
-												<ul class="dropdown-menu">
-													<li><a href="shop-listing-3col.html">Shop - 3 Columns</a></li>
-													<li><a href="shop-listing-4col.html">Shop - 4 Columns</a></li>
-													<li><a href="shop-listing-sidebar.html">Shop - With Sidebar</a></li>
-													<li><a href="shop-product.html">Product</a></li>
-													<li><a href="shop-cart.html">Shopping Cart</a></li>
-													<li><a href="shop-checkout.html">Checkout Page - Step 1</a></li>
-													<li><a href="shop-checkout-payment.html">Checkout Page - Step 2</a>
-													</li>
-													<li><a href="shop-checkout-review.html">Checkout Page - Step 3</a>
 													</li>
 												</ul>
 											</li>
+											<!-- mega-menu end -->
 											<li class="dropdown">
-												<a href="blog-right-sidebar.html" class="dropdown-toggle"
-												   data-toggle="dropdown">Blog</a>
+												<a href="#" class="dropdown-toggle"
+												   data-toggle="dropdown">积分</a>
 												<ul class="dropdown-menu">
-													<li><a href="blog-right-sidebar.html">Blog Right Sidebar</a></li>
-													<li><a href="blog-left-sidebar.html">Blog Left Sidebar</a></li>
-													<li><a href="blog-no-sidebar.html">Blog No Sidebars</a></li>
-													<li><a href="blog-masonry.html">Blog Masonry</a></li>
-													<li><a href="blog-masonry-sidebar.html">Blog Masonry - Sidebar</a>
-													</li>
-													<li><a href="blog-timeline.html">Blog Timeline</a></li>
-													<li><a href="blog-post.html">Blog post</a></li>
+													<li><a href="#" onclick="openCreditUserWindow()">积分流水</a></li>
+													<li><a href="#" onclick="getCredit()">积分余额</a></li>
 												</ul>
 											</li>
 										</ul>
+									</div>
 									</div>
 
 								</div>
@@ -837,7 +884,7 @@ body classes:
 	<!-- page-top start-->
 	<!-- ================ -->
 	<div class="row">
-		<div class="col-md-12" style="text-align: center;">
+		<div id="placeOrderDiv"class="col-md-12" style="text-align: center;">
 					<span class="btn btn-primary k-grid-add"
 						  data-bind="click:create_product" onclick="placeOrderWindow()">立即下单</span>
 		</div>
@@ -872,11 +919,11 @@ body classes:
 							</div>
 							<div class="collapse navbar-collapse" id="navbar-collapse-2">
 								<ul class="nav navbar-nav">
-									<li><a href="index.html">Home</a></li>
-									<li><a href="page-about.html">About</a></li>
-									<li><a href="blog-right-sidebar.html">Blog</a></li>
-									<li><a href="portfolio-3col.html">Portfolio</a></li>
-									<li><a href="page-contact.html">Contact</a></li>
+									<li><a href="#">Home</a></li>
+									<li><a href="#">About</a></li>
+									<li><a href="#">Blog</a></li>
+									<li><a href="#">Portfolio</a></li>
+									<li><a href="#">Contact</a></li>
 								</ul>
 							</div>
 						</nav>

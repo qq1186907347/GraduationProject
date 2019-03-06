@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="graduation.credit.mapper.CreditDriverMapper">
+    <resultMap id="BaseResultMap" type="graduation.credit.dto.CreditDriver">
+        <result column="credit_id" property="creditId" jdbcType="DECIMAL" />
+        <result column="driver_id" property="driverId" jdbcType="DECIMAL" />
+        <result column="order_id" property="orderId" jdbcType="DECIMAL" />
+        <result column="num" property="num" jdbcType="DECIMAL" />
+        <result column="credit_type" property="creditType" jdbcType="DECIMAL" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <select id="selectCreditDriver" resultMap="BaseResultMap" parameterType="graduation.credit.dto.CreditDriver">
+        SELECT *
+        from
+        credit_driver t
+        <where>
+            1=1
+            <if test="creditId!= null">
+                and t.credit_id = #{creditId,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and t.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="orderId!= null">
+                and t.order_id = #{orderId,jdbcType=DECIMAL}
+            </if>
+            <if test="creditType!= null">
+                and t.credit_type = #{creditType,jdbcType=DECIMAL}
+            </if>
+        </where>
+        order  by t.create_time desc
+    </select>
+
+    <insert id="addCredit">
+    INSERT  INTO credit_driver (driver_id,order_id,credit_type,num)
+    VALUES (#{driverId}, #{orderId}, #{creditType}, #{num})
+</insert>
+
+
+</mapper>

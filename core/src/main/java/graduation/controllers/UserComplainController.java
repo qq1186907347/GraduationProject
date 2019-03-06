@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.validation.BindingResult;
 
@@ -22,11 +23,36 @@ public class UserComplainController extends BaseController {
     private IUserComplainService service;
 
 
-    @RequestMapping(value = "/user/complain/query")
+    @RequestMapping(value = "/user/complain/queryById/{complainStatus}")
     @ResponseBody
-    public ResponseData query(UserComplain dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+    public ResponseData queryById(UserComplain dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request,
+                              @PathVariable Long complainStatus) {
         IRequest requestContext = createRequestContext(request);
+        dto.setComplainStatus(complainStatus);
+        return new ResponseData(service.selectUserComplain(requestContext, dto, page, pageSize));
+    }
+    @RequestMapping(value = "/user/complain/queryUser")
+    @ResponseBody
+    public ResponseData queryUser(UserComplain dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        HttpSession session = request.getSession();
+        //得到用户id
+        Long userId = (Long) session.getAttribute("userId");
+        dto.setUserId(userId);
+        return new ResponseData(service.selectUserComplain(requestContext, dto, page, pageSize));
+    }
+
+    @RequestMapping(value = "/user/complain/queryDriver")
+    @ResponseBody
+    public ResponseData queryDriver(UserComplain dto, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        HttpSession session = request.getSession();
+        //得到司机id
+        Long driverId = (Long) session.getAttribute("driverId");
+        dto.setDriverId(driverId);
         return new ResponseData(service.selectUserComplain(requestContext, dto, page, pageSize));
     }
 
@@ -36,6 +62,26 @@ public class UserComplainController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         dto.setOrderId(orderId);
         return new ResponseData(service.selectUserComplain(dto));
+    }
+
+    @RequestMapping(value = "/user/complain/setFinish")
+    @ResponseBody
+    public ResponseData orderFinish(@RequestBody UserComplain dto, HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        ResponseData responseData = new ResponseData();
+        try {
+            dto=service.selectByPrimaryKey(requestContext,dto);
+            //把投诉设置成已经处理
+            dto.setComplainStatus(1L);
+            service.updateByPrimaryKey(requestContext,dto);
+            return responseData;
+        } catch (Exception e) {
+            throw  e;
+ /*           responseData.setSuccess(false);
+            responseData.setMessage("操作失败,请联系管理员");
+            return responseData;*/
+
+        }
     }
 
     @RequestMapping(value = "/user/complain/add")

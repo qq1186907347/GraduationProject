@@ -1,5 +1,7 @@
 package graduation.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.hand.hap.core.IRequest;
 import com.hand.hap.system.service.impl.BaseServiceImpl;
 import graduation.mapper.EvaluateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,9 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
     }
 
     @Override
-    public List<Evaluate> selectEvaluate(Evaluate dto) {
+    public List<Evaluate> selectEvaluate(IRequest requestContext, Evaluate dto, int page, int pageSize) {
+        //分页
+        PageHelper.startPage(page, pageSize);
         return evaluateMapper.selectEvaluate(dto);
     }
 }

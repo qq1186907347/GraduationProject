@@ -1,0 +1,149 @@
+<#include "../head/header2.html">
+<title>评价</title>
+</head>
+<!--在代码维护里面定义相应的数据-->
+<script src="${base.contextPath}/resources/js/jquery/jquery.form.js"></script>
+<script src="${base.contextPath}/common/code?serviceScore=EVALUATE.SERVICE.SCORE" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+    });
+
+    //加载数据
+    $(function () {
+        $("#serviceScore").kendoDropDownList({
+            dataTextField: "meaning",
+            dataValueField: "value",
+            dataSource: serviceScore,
+            change: function () {
+                viewModel.model.set('serviceScore', this.value());
+            }
+        });
+        var orderId =${RequestParameters.orderId!-1};
+        var userId =${RequestParameters.userId!-1};
+        var driverId =${RequestParameters.driverId!-1};
+        viewModel.model.set("orderId",orderId);
+        viewModel.model.set("userId",userId);
+        viewModel.model.set("driverId",driverId);
+        viewModel.model.set("evaluateType",'1');
+    })
+
+    function addEvaluate(){
+        if(checkFrom()){
+            $.ajax({
+                url: '${base.contextPath}/evaluate/add',
+                type: 'POST',
+                dataType: "json",
+                data:JSON.stringify(viewModel.model),
+                contentType: "application/json",
+                success: function (result) {
+                    if(result.success){
+                        kendo.ui.showInfoDialog({
+                            title: $l('hap.tip.info'),
+                            message: '评价成功',
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    window.parent.$("#addEvaluate-window").data("kendoWindow").close();
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
+                        });
+                    } else {
+                        kendo.ui.showErrorDialog({
+                            title: $l('hap.error'),
+                            message : result.message
+                        });
+                    }
+                }
+            });
+        }
+    }
+    //表单校验
+    function checkFrom() {
+        var validator = $("#baseMessage").kendoValidator({
+            //验证样式 默认为default
+            invalidMessageType: "default",
+        }).data("kendoValidator");
+        if (validator.validate()) {
+            console.log("true");
+            return true;
+        } else {
+            console.log("false");
+            return false;
+        }
+    }
+
+</script>
+<style>
+    .div{
+        margin:0 auto;
+        width:70rem;
+    }
+    .tab-p {
+        text-align: center;
+        font-size: 2rem;
+        margin: 0.7rem;
+        font-family: "Arial Black", arial-black;
+        font-weight: bold;
+    }
+    .div-out {
+        color: green;
+
+    }
+
+    .font-p {
+        height:3rem;
+        color: black;
+        font-size: 1.4rem;
+
+    }
+
+    .font-input {
+        height: 3rem;
+        width: 100%;
+    }
+    .star{
+        padding-right: 1rem;
+        color: red;
+    }
+
+</style>
+<body>
+<div class="div" id="pageContext">
+    <div id="baseMessage">
+        <!--评分-start-->
+        <div class="row  div-out btn-primary" style="padding: 0.1rem; background-color:#f1f1f1;border-radius:0.5rem;">
+            <div class="col-md-12 tab-p">评价</div>
+        </div>
+
+        <div class="row div-out" >
+            <div class="col-md-5 ">
+                <span class="star">*</span>用户评分<input name="用户评分" id="serviceScore" required  type="text" class=" k-textbox"  data-bind="value:model.serviceScore">分
+            </div>
+            <div class="col-md-7 font-p"> </div>
+            <script>kendo.bind($('#serviceScore'), viewModel);</script>
+
+        </div>
+        <div class="row div-out" >
+            <div class="col-md-10 ">
+                <div style="text-align: left">
+                <span class="star">*</span>评价:
+                </div>
+                <textarea name="评价" style="height: 15rem;width: 100%" id="content" required placeholder="请填写评论,最多500字"  type="text" class=" k-textbox"  data-bind="value:model.content"></textarea>
+
+            </div>
+            <script>kendo.bind($('#content'), viewModel);</script>
+        </div>
+
+        <div class="col-md-12 font-p" style="text-align: center">
+             <span class="btn btn-success k-grid-add"
+                   onclick="addEvaluate()"><i class="fa fa-arrow-circle-o-up" style="margin-right:3px;"></i>评价</span>
+        </div>
+    </div>
+    <!--评分-end-->
+</body>
+</html>
