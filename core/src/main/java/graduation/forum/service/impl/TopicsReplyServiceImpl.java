@@ -11,12 +11,16 @@ import graduation.forum.service.ITopicsReplyService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TopicsReplyServiceImpl extends BaseServiceImpl<TopicsReply> implements ITopicsReplyService{
     @Autowired
     TopicsReplyMapper topicsReplyMapper;
+    /*** 定义锁对象*/
+    private Lock lock = new ReentrantLock();
 
     @Override
     public List<TopicsReply> selectReply(IRequest requestContext, TopicsReply dto, int page, int pageSize) {
@@ -26,7 +30,15 @@ public class TopicsReplyServiceImpl extends BaseServiceImpl<TopicsReply> impleme
     }
 
     @Override
-    public void addReply(TopicsReply dto) {
-        topicsReplyMapper.addReply(dto);
+    public void addReply(TopicsReply dto)
+    {
+        try {
+            lock.lock();
+            topicsReplyMapper.addReply(dto);
+        }catch (Exception e){
+            throw e;
+        }finally {
+            lock.unlock();
+        }
     }
 }

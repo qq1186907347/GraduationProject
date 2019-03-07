@@ -48,6 +48,28 @@
         </where>
 </select>
 
+    <select id="selectROrder" resultMap="BaseResultMap" parameterType="graduation.order.dto.UserOrder">
+        SELECT * from
+        user_order u
+        <where>
+            1=1
+            and u.order_status=0
+            <if test="userId!= null">
+                and u.user_id = #{userId,jdbcType=DECIMAL}
+            </if>
+            <if test="driverId!= null">
+                and u.driver_id = #{driverId,jdbcType=DECIMAL}
+            </if>
+            <if test="startAddress!= null">
+                and u.start_address LIKE concat(#{startAddress,jdbcType=VARCHAR}, "%")
+            </if>
+            <if test="endAddress!= null">
+                and u.end_address LIKE concat(#{endAddress,jdbcType=VARCHAR}, "%")
+            </if>
+        </where>
+        order by u.order_price desc
+    </select>
+
     <update id="updateOrder" parameterType="graduation.order.dto.UserOrder">
         UPDATE user_order
         <set>

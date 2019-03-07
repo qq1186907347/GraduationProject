@@ -20,6 +20,7 @@
     VALUES (#{carType}, #{plateNumber}, #{carLong},#{carHeight}, #{carWide}, #{carAge}, #{carTonnage}, #{driverId}, #{carBrand})
 </insert>
 
+    <!--获取没有在跑订单的车辆-->
     <select id="selectCars" resultMap="BaseResultMap" parameterType="graduation.dto.DriverCar">
         SELECT * from
         driver_car dc
@@ -32,6 +33,27 @@
             <if test="carTonnage!= null">
                 and dc.car_tonnage &gt;= #{carTonnage,jdbcType=FLOAT}
                 and dc.driver_id not in(select driver_id from user_order where order_status=0)
+                and dc.driver_id in(select driver_id from driver_message where message_status=1)
+            </if>
+            <if test="carType!= null">
+                and dc.car_type = #{carType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--获取正在跑的车辆-->
+    <select id="selectRCars" resultMap="BaseResultMap" parameterType="graduation.dto.DriverCar">
+        SELECT * from
+        driver_car dc
+        <where>
+
+            1=1
+            <if test="driverId!= null">
+                and dc.driver_id = #{driverId,jdbcType=VARCHAR}
+            </if>
+            <if test="carTonnage!= null">
+                and dc.car_tonnage &gt;= #{carTonnage,jdbcType=FLOAT}
+                and dc.driver_id in(select driver_id from user_order where order_status=0)
                 and dc.driver_id in(select driver_id from driver_message where message_status=1)
             </if>
             <if test="carType!= null">

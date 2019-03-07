@@ -49,7 +49,7 @@
     </select>
 
     <insert id="register">
-    INSERT  INTO login_user (user_name, password, phone,real_name)
-    VALUES (#{userName}, #{password}, #{phone},#{realName})
+    INSERT  INTO login_user (user_name, password, phone,real_name,user_call)
+    VALUES (#{userName}, #{password}, #{phone},#{realName},#{userCall})
 </insert>
 </mapper>

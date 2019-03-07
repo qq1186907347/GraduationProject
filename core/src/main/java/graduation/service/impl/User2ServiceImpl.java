@@ -9,12 +9,16 @@ import graduation.service.IUser2Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class User2ServiceImpl extends BaseServiceImpl<User2> implements IUser2Service{
+public class User2ServiceImpl extends BaseServiceImpl<User2> implements IUser2Service {
     @Autowired
     User2Mapper user2Mapper;
+    /*** 定义锁对象*/
+    private Lock lock = new ReentrantLock();
 
     @Override
     public User2 selectByUserName(User2 dto) {
@@ -23,7 +27,15 @@ public class User2ServiceImpl extends BaseServiceImpl<User2> implements IUser2Se
 
     @Override
     public int register(User2 dto) {
-        return user2Mapper.register(dto);
+        try {
+            lock.lock();
+            return user2Mapper.register(dto);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            lock.unlock();
+        }
+
     }
 
     @Override

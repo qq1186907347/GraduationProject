@@ -10,4 +10,6 @@ public interface DriverCarMapper extends Mapper<DriverCar>{
     void addCar(DriverCar driverCar);
 
     List<DriverCar> selectCars(DriverCar dto);
+
+    List<DriverCar> selectRCars(DriverCar driverCar);
 }

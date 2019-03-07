@@ -12,4 +12,6 @@ public interface UserOrderMapper extends Mapper<UserOrder>{
     List<UserOrder> selectByUserId(UserOrder dto);
 
     void updateOrder(UserOrder dto);
+
+    List<UserOrder> selectROrder(UserOrder runingOrder);
 }

@@ -19,10 +19,19 @@
                     if(result.success){
                         kendo.ui.showInfoDialog({
                             title: $l('hap.tip.info'),
-                            message: "注册成功"
+                            message: "注册成功",
+                            buttons: [{
+                                text: kendo.ui.Widget.prototype.options.messages['ok'],
+                                type: 'primary',
+                                click: function (e) {
+                                    // close this window
+                                    window.parent.$("#register-window").data("kendoWindow").close();
+                                    e.dialog.destroy();
+                                    e.deferred.resolve({ button: 'OK' });
+                                }
+                            }],
                         });
-                        // close this window
-                        window.parent.$("#register-window").data("kendoWindow").close();
+
                     } else {
                         kendo.ui.showErrorDialog({
                             title: $l('hap.error'),
@@ -104,7 +113,7 @@
                 <span class="star">*</span>账号
             </div>
             <div class="col-md-5 ">
-                <input id="userName" pattern="^[a-zA-Z0-9_-]{4,16}$" name="账号" validationMessage="长度为6到16位（字母，数字，下划线，减号）" required  type="text" class="font-input k-textbox k-valid"  data-bind="value:model.userName">
+                <input id="userName" pattern="^[a-zA-Z0-9_-]{6,16}$" name="账号" validationMessage="长度为6到16位（字母，数字，下划线，减号）" required  type="text" class="font-input k-textbox k-valid"  data-bind="value:model.userName">
             </div>
             <script>kendo.bind($('#userName'), viewModel);</script>
 
@@ -135,6 +144,15 @@
                 <input id="realName" name="realName" type="text" class="font-input k-textbox"  data-bind="value:model.realName">
             </div>
             <script>kendo.bind($('#realName'), viewModel);</script>
+        </div>
+        <div class="row div-out" >
+            <div class="col-md-5 font-p">
+                <span class="star">*</span>昵称
+            </div>
+            <div class="col-md-5 ">
+                <input id="userCall" name="昵称" type="text" class="font-input k-textbox"  data-bind="value:model.userCall">
+            </div>
+            <script>kendo.bind($('#userCall'), viewModel);</script>
         </div>
 
         <div class="row div-out" >

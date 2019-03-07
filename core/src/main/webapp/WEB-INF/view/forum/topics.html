@@ -1,5 +1,6 @@
-<#include "../include/header.html">
+<#include "../head/header2.html">
 <title>用户论坛</title>
+</head>
 <style>
     .triangle {
         width: 0;
@@ -9,6 +10,10 @@
         border-bottom: none;
         border-left-color: transparent;
         border-right-color: transparent;
+    }
+    .div_body{
+        margin:0 auto;
+        width: 120rem;
     }
     .div_topic{
         font-size: 1.8rem;
@@ -41,14 +46,14 @@
     }
 </script>
 <body>
-<div id="page-content">
+<div id="page-content" class="div_body">
     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
         <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="openAddWindow()"><@spring.message "hap.new"/></span>
-        <span class="btn btn-success k-grid-save-changes" data-bind="click:save" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
-        <span  data-bind="click:remove" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+        <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='主题'
+               data-bind="value:model.topicTitle" class="k-textbox">
         <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
         <div style="clear:both"></div>
     </div>

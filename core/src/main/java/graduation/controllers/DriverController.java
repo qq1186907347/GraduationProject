@@ -40,17 +40,6 @@ public class DriverController extends BaseController {
         ResponseData responseData = new ResponseData();
         try {
             Driver driver = new Driver();
-            //验证邮箱是否注册了
-            driver.setEmail(dto.getEmail());
-
-            if (service.selectByDriver(driver) != null) {
-                responseData.setSuccess(false);
-                responseData.setMessage("该邮箱已经被注册了！");
-                return responseData;
-            } else {
-                driver = new Driver();
-                ;
-            }
             //验证电话是否注册了
             driver.setPhone(dto.getPhone());
             if (service.selectByDriver(driver) != null) {
@@ -67,7 +56,7 @@ public class DriverController extends BaseController {
                 responseData.setMessage("该账号已经被注册了！");
                 return responseData;
             } else {
-                driver = null;
+                driver = new Driver();
             }
             service.selectByDriver(dto);
             service.driverRegister(dto);
